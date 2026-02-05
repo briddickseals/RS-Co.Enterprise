@@ -1,0 +1,29 @@
+# Environment
+.env
+.env.local
+*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+
+# Secrets
+*.pem
+*.key
+credentials.json
+secrets.json
+
+# Build
+dist/
+build/
+*.egg-info/
