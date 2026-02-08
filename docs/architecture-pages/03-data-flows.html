@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Flows - RS&Co. Enterprise</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --white: #FFFFFF;
+  --gray-50: #F8FAFC;
+  --gray-100: #F1F5F9;
+  --gray-200: #E2E8F0;
+  --gray-300: #CBD5E1;
+  --gray-400: #94A3B8;
+  --gray-500: #64748B;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1E293B;
+  --gray-900: #0F172A;
+  --accent-blue: #2563EB;
+  --accent-cyan: #0891B2;
+  --accent-teal: #0D9488;
+  --accent-green: #16A34A;
+  --accent-amber: #D97706;
+  --accent-purple: #7C3AED;
+  --accent-pink: #DB2777;
+  --text-primary: #1E293B;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --border: rgba(0, 0, 0, 0.08);
+  --shadow: rgba(0, 0, 0, 0.05);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--gray-50);
+  color: var(--text-primary);
+}
+
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+header {
+  position: relative; z-index: 10;
+  padding: 40px 60px 30px;
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: flex-end;
+  background: var(--white);
+}
+
+.logo { display: flex; flex-direction: column; gap: 4px; }
+.logo h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; color: var(--gray-900); }
+.logo h1 span { color: var(--accent-blue); }
+.logo p { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px; font-weight: 500; }
+.version { font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+nav {
+  position: relative; z-index: 10;
+  display: flex; gap: 4px; padding: 12px 60px;
+  border-bottom: 1px solid var(--border);
+  background: var(--white);
+  position: sticky; top: 0;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+
+nav a {
+  background: none; border: 1px solid transparent; color: var(--text-secondary);
+  padding: 8px 18px; border-radius: 6px; font-family: 'DM Sans'; font-size: 13px;
+  font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none;
+}
+nav a:hover { color: var(--text-primary); background: var(--gray-100); }
+nav a.active {
+  color: var(--accent-blue); border-color: var(--accent-blue);
+  background: rgba(37,99,235,0.06);
+}
+
+main { position: relative; z-index: 5; padding: 40px 60px; }
+
+.section-title {
+  font-size: 28px; font-weight: 700; margin-bottom: 8px; color: var(--gray-900);
+}
+.section-subtitle {
+  font-size: 15px; color: var(--text-muted); margin-bottom: 40px; max-width: 900px; line-height: 1.7;
+}
+
+.flow-container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.flow-section {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.flow-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.flow-title .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.flow-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.flow-row:last-child {
+  margin-bottom: 0;
+}
+
+.flow-box {
+  padding: 14px 22px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  border: 2px solid;
+  background: var(--white);
+  transition: all 0.2s;
+}
+
+.flow-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+.flow-arrow {
+  color: var(--gray-400);
+  font-family: 'JetBrains Mono';
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.flow-description {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--gray-50);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.flow-description strong {
+  color: var(--gray-900);
+}
+
+.system-record {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(22,163,74,0.1);
+  color: var(--accent-green);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: 8px;
+}
+
+@media (max-width: 1200px) {
+  header, nav, main { padding-left: 30px; padding-right: 30px; }
+}
+@media (max-width: 768px) {
+  nav { overflow-x: auto; }
+  .flow-box { padding: 10px 14px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<header>
+  <div class="logo">
+    <h1>RS<span>&</span>Co.</h1>
+    <p>Enterprise Architecture</p>
+  </div>
+  <div class="version">v1.1 | February 5, 2026 | Confidential</div>
+</header>
+
+<nav>
+  <a href="00-index.html">Home</a>
+  <a href="01-system-architecture.html">System Architecture</a>
+  <a href="02-agentic-staff.html">Agentic Staff</a>
+  <a href="03-data-flows.html" class="active">Data Flows</a>
+  <a href="04-executive-dashboard.html">Executive Dashboard</a>
+  <a href="05-operating-model.html">Operating Model</a>
+  <a href="06-decommission-plan.html">Decommission Plan</a>
+</nav>
+
+<main>
+  <div class="section-title">Data Flow Architecture</div>
+  <div class="section-subtitle">Primary data flows across the enterprise. Each flow is unidirectional or bi-directional with a clear system of record designation. All flows are event-driven via Power Automate or MCP Server connections.</div>
+
+  <div class="flow-container">
+
+    <div class="flow-section">
+      <div class="flow-title">
+        <div class="dot" style="background: var(--accent-blue);"></div>
+        Deal Lifecycle Flow
+        <span class="system-record">System of Record: Wix CMS</span>
+      </div>
+      <div class="flow-row">
+        <div class="flow-box" style="border-color:var(--accent-purple);color:var(--accent-purple)">📊 Deal Intake Agent</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box" style="border-color:var(--accent-amber);color:var(--accent-amber)">🗄️ Wix CMS (DealRoomDeals)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box" style="border-color:var(--accent-blue);color:var(--accent-blue)">⚙️ Power Automate</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box" style="border-color:var(--accent-cyan);color:var(--accent-cyan)">📁 SharePoint + Teams + CRM</div>
+      </div>
+      <div class="flow-description">
+        <strong>Trigger:</strong> New deal submission via Copilot Studio agent or direct CMS entry.<br>
+        <strong>Process:</strong> Deal data validated → stored in Wix CMS → Power Automate creates SharePoint folder structure, Teams channel, and CRM opportunity record.<br>
+        <strong>Outcome:</strong> Unified deal record with linked documents, communications, and pipeline tracking.
+      </div>
+    </div>
+
+    <div class="flow-section">
+      <div class="flow-title">
+        <div class="dot" style="background: var(--accent-teal);"></div>
+        NDA Execution Flow
+        <span class="system-record">System of Record: Wix CMS</span>
+      </div>
+      <div class="flow-row">
+        <div class="flow-box" style="border-color:var(--accent-amber);color:var(--accent-amber)">📱 Wix Members Portal</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box" style="border-color:var(--accent-amber);color:var(--accent-amber)">🗄️ Wix CMS (DealRoomNDAs)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box" style="border-color:var(--accent-blue);color:var(--accent-blue)">⚙️ Power Automate</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box" style="border-color:var(--accent-cyan);color:var(--accent-cyan)">💬 Teams + Outlook + D365</div>
+      </div>
+      <div class="flow-description">
+        <strong>Trigger:</strong> Investor submits NDA via Wix Members portal.<br>
+        <strong>Process:</strong> NDA record created in CMS → Power Automate notifies deal team in Teams, sends confirmation email, creates contact in Dynamics 365.<br>
+        <strong>Outcome:</strong> Investor granted access to deal documents; all parties notified; CRM contact enriched.
+      </div>
+    </div>
+
+    <div class="flow-section">
+      <div class="flow-title">
+        <div class="dot" style="background: var(--accent-green);"></div>
+        Document Management Flow
+        <span class="system-record">System of Record: SharePoint</span>
+      </div>
+      <div class="flow-row">
+        <div class="flow-box" style="border-color:var(--accent-amber);color:var(--accent-amber)">🖼️ Wix Media Manager</div>
+        <div class="flow-arrow">↔</div>
+        <div class="flow-box" style="border-color:var(--accent-blue);color:var(--accent-blue)">📁 SharePoint /Deals/{slug}/</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box" style="border-color:var(--accent-cyan);color:var(--accent-cyan)">📊 Power BI (Doc Analytics)</div>
+      </div>
+      <div class="flow-description">
+        <strong>Trigger:</strong> Document upload via Wix or SharePoint.<br>
+        <strong>Process:</strong> Bi-directional sync ensures documents available in both platforms. SharePoint is system of record for version control. Power BI tracks engagement metrics.<br>
+        <strong>Outcome:</strong> Single source of truth for all deal documents with full audit trail and analytics.
+      </div>
+    </div>
+
+    <div class="flow-section">
+      <div class="flow-title">
+        <div class="dot" style="background: var(--accent-amber);"></div>
+        Financial Tracking Flow
+        <span class="system-record">System of Record: Business Central</span>
+      </div>
+      <div class="flow-row">
+        <div class="flow-box" style="border-color:var(--accent-amber);color:var(--accent-amber)">🗄️ Wix CMS (Deal → In Escrow)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box" style="border-color:var(--accent-blue);color:var(--accent-blue)">⚙️ Power Automate</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box" style="border-color:var(--accent-blue);color:var(--accent-blue)">💰 Business Central (Projects)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box" style="border-color:var(--accent-cyan);color:var(--accent-cyan)">📊 Power BI (Portfolio)</div>
+      </div>
+      <div class="flow-description">
+        <strong>Trigger:</strong> Deal status changes to "In Escrow" in Wix CMS.<br>
+        <strong>Process:</strong> Power Automate creates project in Business Central with deal financials. Ongoing updates sync between systems.<br>
+        <strong>Outcome:</strong> Financial tracking begins automatically; portfolio-level reporting available in Power BI.
+      </div>
+    </div>
+
+    <div class="flow-section">
+      <div class="flow-title">
+        <div class="dot" style="background: var(--accent-purple);"></div>
+        Development & Deployment Flow
+        <span class="system-record">System of Record: GitHub</span>
+      </div>
+      <div class="flow-row">
+        <div class="flow-box" style="border-color:var(--accent-purple);color:var(--accent-purple)">⚡ Claude Code (VS Code)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box" style="border-color:var(--accent-teal);color:var(--accent-teal)">🐙 GitHub (RS-Co.Enterprise)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box" style="border-color:var(--accent-cyan);color:var(--accent-cyan)">🔄 Azure DevOps (CI/CD)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box" style="border-color:var(--accent-amber);color:var(--accent-amber)">🔧 Wix Velo + SharePoint</div>
+      </div>
+      <div class="flow-description">
+        <strong>Trigger:</strong> Code commit to GitHub repository.<br>
+        <strong>Process:</strong> Azure DevOps pipeline runs tests, builds artifacts, and deploys to Wix Velo (backend modules) or SharePoint (scripts/templates).<br>
+        <strong>Outcome:</strong> Automated deployment with full version control and rollback capability.
+      </div>
+    </div>
+
+    <div class="flow-section">
+      <div class="flow-title">
+        <div class="dot" style="background: var(--accent-pink);"></div>
+        AI Agent Communication Flow
+      </div>
+      <div class="flow-row">
+        <div class="flow-box" style="border-color:var(--accent-purple);color:var(--accent-purple)">🧠 Claude (Strategy)</div>
+        <div class="flow-arrow">↔</div>
+        <div class="flow-box" style="border-color:var(--accent-teal);color:var(--accent-teal)">🔌 MCP Servers</div>
+        <div class="flow-arrow">↔</div>
+        <div class="flow-box" style="border-color:var(--accent-amber);color:var(--accent-amber)">🌐 Wix CMS + Sites</div>
+      </div>
+      <div class="flow-row" style="margin-top: 12px;">
+        <div class="flow-box" style="border-color:var(--accent-green);color:var(--accent-green)">🔮 OpenAI (Content)</div>
+        <div class="flow-arrow">↔</div>
+        <div class="flow-box" style="border-color:var(--accent-blue);color:var(--accent-blue)">🤖 Copilot Studio</div>
+        <div class="flow-arrow">↔</div>
+        <div class="flow-box" style="border-color:var(--accent-blue);color:var(--accent-blue)">💬 Teams + Dynamics 365</div>
+      </div>
+      <div class="flow-description">
+        <strong>Architecture:</strong> Two parallel AI communication channels.<br>
+        <strong>Anthropic Path:</strong> Claude ↔ MCP Servers ↔ Wix for real-time site management and CMS operations.<br>
+        <strong>Microsoft Path:</strong> OpenAI/Copilot ↔ Teams/Dynamics for client-facing interactions and internal Q&A.<br>
+        <strong>Outcome:</strong> AI agents can read/write to all enterprise systems with appropriate access controls.
+      </div>
+    </div>
+
+  </div>
+</main>
+</body>
+</html>

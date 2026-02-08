@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RS&Co. Enterprise Architecture</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --white: #FFFFFF;
+  --gray-50: #F8FAFC;
+  --gray-100: #F1F5F9;
+  --gray-200: #E2E8F0;
+  --gray-300: #CBD5E1;
+  --gray-400: #94A3B8;
+  --gray-500: #64748B;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1E293B;
+  --gray-900: #0F172A;
+  --accent-blue: #2563EB;
+  --accent-cyan: #0891B2;
+  --accent-teal: #0D9488;
+  --accent-green: #16A34A;
+  --accent-amber: #D97706;
+  --accent-orange: #EA580C;
+  --accent-red: #DC2626;
+  --accent-purple: #7C3AED;
+  --accent-pink: #DB2777;
+  --text-primary: #1E293B;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --border: rgba(0, 0, 0, 0.08);
+  --shadow: rgba(0, 0, 0, 0.05);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--gray-50);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.bg-radial {
+  position: fixed; inset: 0; z-index: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(37,99,235,0.04), transparent),
+              radial-gradient(ellipse 60% 40% at 80% 100%, rgba(8,145,178,0.03), transparent);
+}
+
+header {
+  position: relative; z-index: 10;
+  padding: 40px 60px 30px;
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: flex-end;
+  background: var(--white);
+}
+
+.logo { display: flex; flex-direction: column; gap: 4px; }
+.logo h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; color: var(--gray-900); }
+.logo h1 span { color: var(--accent-blue); }
+.logo p { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px; font-weight: 500; }
+.version { font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+nav {
+  position: relative; z-index: 10;
+  display: flex; gap: 4px; padding: 12px 60px;
+  border-bottom: 1px solid var(--border);
+  background: var(--white);
+  position: sticky; top: 0;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+
+nav button {
+  background: none; border: 1px solid transparent; color: var(--text-secondary);
+  padding: 8px 18px; border-radius: 6px; font-family: 'DM Sans'; font-size: 13px;
+  font-weight: 500; cursor: pointer; transition: all 0.2s;
+}
+nav button:hover { color: var(--text-primary); background: var(--gray-100); }
+nav button.active {
+  color: var(--accent-blue); border-color: var(--accent-blue);
+  background: rgba(37,99,235,0.06);
+}
+
+main { position: relative; z-index: 5; padding: 40px 60px; }
+
+.section { display: none; animation: fadeIn 0.4s ease; }
+.section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.section-title {
+  font-size: 22px; font-weight: 600; margin-bottom: 8px; color: var(--gray-900);
+}
+.section-subtitle {
+  font-size: 14px; color: var(--text-muted); margin-bottom: 32px; max-width: 800px; line-height: 1.6;
+}
+
+.arch-container {
+  display: grid; grid-template-columns: 1fr; gap: 24px;
+}
+
+.arch-layer {
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 24px; position: relative;
+  background: var(--white);
+  box-shadow: 0 1px 3px var(--shadow);
+}
+.arch-layer::before {
+  content: attr(data-layer);
+  position: absolute; top: -10px; left: 20px;
+  background: var(--gray-50); padding: 0 12px;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 2px;
+  color: var(--text-muted); font-weight: 600;
+}
+
+.layer-nodes {
+  display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+}
+
+.node {
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px 20px; min-width: 160px; text-align: center;
+  cursor: pointer; transition: all 0.3s; position: relative;
+  background: var(--gray-50);
+}
+.node:hover { transform: translateY(-3px); box-shadow: 0 4px 12px var(--shadow); }
+.node .icon { font-size: 24px; margin-bottom: 8px; }
+.node .name { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.node .role { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+.node .status {
+  position: absolute; top: 8px; right: 8px; width: 8px; height: 8px;
+  border-radius: 50%;
+}
+.status-live { background: var(--accent-green); box-shadow: 0 0 6px var(--accent-green); }
+.status-config { background: var(--accent-amber); box-shadow: 0 0 6px var(--accent-amber); }
+.status-planned { background: var(--accent-blue); box-shadow: 0 0 6px var(--accent-blue); }
+.status-retire { background: var(--accent-red); box-shadow: 0 0 6px var(--accent-red); }
+
+.node[data-color="blue"] { border-color: rgba(37,99,235,0.3); }
+.node[data-color="blue"]:hover { border-color: var(--accent-blue); box-shadow: 0 4px 20px rgba(37,99,235,0.12); }
+.node[data-color="cyan"] { border-color: rgba(8,145,178,0.3); }
+.node[data-color="cyan"]:hover { border-color: var(--accent-cyan); box-shadow: 0 4px 20px rgba(8,145,178,0.12); }
+.node[data-color="green"] { border-color: rgba(22,163,74,0.3); }
+.node[data-color="green"]:hover { border-color: var(--accent-green); box-shadow: 0 4px 20px rgba(22,163,74,0.12); }
+.node[data-color="purple"] { border-color: rgba(124,58,237,0.3); }
+.node[data-color="purple"]:hover { border-color: var(--accent-purple); box-shadow: 0 4px 20px rgba(124,58,237,0.12); }
+.node[data-color="amber"] { border-color: rgba(217,119,6,0.3); }
+.node[data-color="amber"]:hover { border-color: var(--accent-amber); box-shadow: 0 4px 20px rgba(217,119,6,0.12); }
+.node[data-color="red"] { border-color: rgba(220,38,38,0.3); }
+.node[data-color="red"]:hover { border-color: var(--accent-red); box-shadow: 0 4px 20px rgba(220,38,38,0.12); }
+.node[data-color="teal"] { border-color: rgba(13,148,136,0.3); }
+.node[data-color="teal"]:hover { border-color: var(--accent-teal); box-shadow: 0 4px 20px rgba(13,148,136,0.12); }
+.node[data-color="orange"] { border-color: rgba(234,88,12,0.3); }
+.node[data-color="orange"]:hover { border-color: var(--accent-orange); box-shadow: 0 4px 20px rgba(234,88,12,0.12); }
+
+.flow-arrows {
+  display: flex; justify-content: center; padding: 8px 0;
+  color: var(--text-muted); font-size: 20px; letter-spacing: 8px;
+}
+
+.agent-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;
+}
+
+.agent-card {
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 24px; background: var(--white);
+  transition: all 0.3s; cursor: default;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+.agent-card:hover { border-color: rgba(37,99,235,0.3); transform: translateY(-2px); box-shadow: 0 4px 12px var(--shadow); }
+.agent-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.agent-avatar {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.agent-name { font-size: 15px; font-weight: 600; color: var(--gray-900); }
+.agent-title { font-size: 11px; color: var(--text-muted); }
+.agent-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.agent-tag {
+  font-size: 10px; padding: 3px 8px; border-radius: 4px;
+  font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.tag-platform { background: rgba(37,99,235,0.1); color: var(--accent-blue); }
+.tag-function { background: rgba(13,148,136,0.1); color: var(--accent-teal); }
+.tag-priority { background: rgba(217,119,6,0.1); color: var(--accent-amber); }
+.agent-resp {
+  font-size: 12px; color: var(--text-secondary); line-height: 1.7;
+}
+.agent-resp li { margin-bottom: 4px; list-style: none; padding-left: 16px; position: relative; }
+.agent-resp li::before { content: "→"; position: absolute; left: 0; color: var(--text-muted); }
+
+.flow-diagram {
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.flow-row {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.flow-box {
+  padding: 12px 20px; border-radius: 8px; font-size: 13px;
+  font-weight: 500; white-space: nowrap; border: 1px solid;
+  background: var(--white);
+}
+.flow-arrow {
+  color: var(--text-muted); font-family: 'JetBrains Mono'; font-size: 16px;
+}
+
+.decomm-table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  border-radius: 12px; overflow: hidden; border: 1px solid var(--border);
+  box-shadow: 0 1px 3px var(--shadow);
+}
+.decomm-table th {
+  background: var(--gray-100); padding: 14px 20px; text-align: left;
+  font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border);
+}
+.decomm-table td {
+  padding: 14px 20px; font-size: 13px; color: var(--text-secondary);
+  border-bottom: 1px solid var(--border); background: var(--white);
+}
+.decomm-table tr:last-child td { border-bottom: none; }
+.badge {
+  display: inline-block; padding: 3px 10px; border-radius: 4px;
+  font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.badge-retire { background: rgba(220,38,38,0.1); color: var(--accent-red); }
+.badge-absorb { background: rgba(217,119,6,0.1); color: var(--accent-amber); }
+.badge-archive { background: rgba(124,58,237,0.1); color: var(--accent-purple); }
+.badge-keep { background: rgba(22,163,74,0.1); color: var(--accent-green); }
+
+.dash-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+}
+.dash-card {
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 20px; background: var(--white);
+  box-shadow: 0 1px 3px var(--shadow);
+}
+.dash-card h4 { font-size: 14px; font-weight: 600; color: var(--gray-900); margin-bottom: 4px; }
+.dash-card .dash-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 12px; }
+.dash-card ul { list-style: none; }
+.dash-card li {
+  font-size: 12px; color: var(--text-secondary); padding: 4px 0;
+  padding-left: 16px; position: relative;
+}
+.dash-card li::before { content: "◆"; position: absolute; left: 0; font-size: 6px; top: 7px; color: var(--accent-blue); }
+
+.dash-card.primary {
+  grid-column: span 3; border-color: rgba(37,99,235,0.2);
+  background: linear-gradient(135deg, var(--white), var(--gray-50));
+}
+.dash-card.primary h4 { font-size: 18px; }
+
+.legend {
+  display: flex; gap: 24px; margin-bottom: 24px; flex-wrap: wrap;
+}
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+.op-model {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+}
+.op-card {
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 24px; background: var(--white);
+  box-shadow: 0 1px 3px var(--shadow);
+}
+.op-card h4 { font-size: 15px; font-weight: 600; color: var(--gray-900); margin-bottom: 6px; }
+.op-card .op-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1px; }
+.op-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+.op-card.full { grid-column: span 2; }
+
+@media (max-width: 1200px) {
+  header, nav, main { padding-left: 30px; padding-right: 30px; }
+  .dash-grid { grid-template-columns: 1fr 1fr; }
+  .dash-card.primary { grid-column: span 2; }
+  .op-model { grid-template-columns: 1fr; }
+  .op-card.full { grid-column: span 1; }
+}
+@media (max-width: 768px) {
+  .dash-grid { grid-template-columns: 1fr; }
+  .dash-card.primary { grid-column: span 1; }
+  nav { overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-radial"></div>
+
+<header>
+  <div class="logo">
+    <h1>RS<span>&</span>Co.</h1>
+    <p>Enterprise Architecture</p>
+  </div>
+  <div class="version">v1.1 | February 5, 2026 | Confidential</div>
+</header>
+
+<nav id="nav">
+  <button class="active" data-tab="architecture">System Architecture</button>
+  <button data-tab="agents">Agentic Staff</button>
+  <button data-tab="flows">Data Flows</button>
+  <button data-tab="dashboard">Executive Dashboard</button>
+  <button data-tab="operating">Operating Model</button>
+  <button data-tab="decommission">Decommission Plan</button>
+</nav>
+
+<main>
+
+<div class="section active" id="architecture">
+  <div class="section-title">Enterprise System Architecture</div>
+  <div class="section-subtitle">Six core platforms forming a unified operating environment. Wix CMS as the system of record, Microsoft 365 as the enterprise backbone, GitHub/VS Code as the development layer, and Claude + OpenAI as the intelligence tier.</div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent-green)"></div> Live / Connected</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent-amber)"></div> Configuring</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent-blue)"></div> Planned</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent-red)"></div> Retiring</div>
+  </div>
+
+  <div class="arch-container">
+
+    <div class="arch-layer" data-layer="Layer 1 — Executive Command Center">
+      <div class="layer-nodes">
+        <div class="node" data-color="blue"><div class="status status-planned"></div><div class="icon">🎯</div><div class="name">RS&Co. Executive Dashboard</div><div class="role">Unified Command Center</div></div>
+        <div class="node" data-color="blue"><div class="status status-config"></div><div class="icon">📊</div><div class="name">Power BI</div><div class="role">Analytics & Reporting</div></div>
+        <div class="node" data-color="cyan"><div class="status status-config"></div><div class="icon">🤖</div><div class="name">Copilot Studio</div><div class="role">AI Agent Hub</div></div>
+      </div>
+    </div>
+
+    <div class="flow-arrows">↕ ↕ ↕</div>
+
+    <div class="arch-layer" data-layer="Layer 2 — AI Intelligence Tier">
+      <div class="layer-nodes">
+        <div class="node" data-color="purple"><div class="status status-live"></div><div class="icon">🧠</div><div class="name">Claude / Anthropic</div><div class="role">Strategy + Architecture</div></div>
+        <div class="node" data-color="purple"><div class="status status-live"></div><div class="icon">⚡</div><div class="name">Claude Code</div><div class="role">Agentic Development</div></div>
+        <div class="node" data-color="green"><div class="status status-live"></div><div class="icon">🔮</div><div class="name">OpenAI / GPT</div><div class="role">Content + Analysis</div></div>
+        <div class="node" data-color="green"><div class="status status-config"></div><div class="icon">💻</div><div class="name">Codex / CLI</div><div class="role">Code Generation</div></div>
+      </div>
+    </div>
+
+    <div class="flow-arrows">↕ ↕ ↕</div>
+
+    <div class="arch-layer" data-layer="Layer 3 — Workflow Orchestration">
+      <div class="layer-nodes">
+        <div class="node" data-color="blue"><div class="status status-config"></div><div class="icon">⚙️</div><div class="name">Power Automate</div><div class="role">Workflow Engine</div></div>
+        <div class="node" data-color="teal"><div class="status status-live"></div><div class="icon">🔌</div><div class="name">MCP Servers</div><div class="role">Wix + Tool Connectors</div></div>
+        <div class="node" data-color="cyan"><div class="status status-live"></div><div class="icon">🔄</div><div class="name">Azure DevOps</div><div class="role">CI/CD Pipelines</div></div>
+        <div class="node" data-color="amber"><div class="status status-config"></div><div class="icon">📧</div><div class="name">Wix Automations</div><div class="role">CRM + Email Triggers</div></div>
+      </div>
+    </div>
+
+    <div class="flow-arrows">↕ ↕ ↕</div>
+
+    <div class="arch-layer" data-layer="Layer 4 — Development & Code">
+      <div class="layer-nodes">
+        <div class="node" data-color="cyan"><div class="status status-live"></div><div class="icon">📝</div><div class="name">VS Code</div><div class="role">IDE + Extensions</div></div>
+        <div class="node" data-color="teal"><div class="status status-live"></div><div class="icon">🐙</div><div class="name">GitHub</div><div class="role">RS-Co.Enterprise Repo</div></div>
+        <div class="node" data-color="amber"><div class="status status-config"></div><div class="icon">🔧</div><div class="name">Wix Velo</div><div class="role">Backend Modules (JSW)</div></div>
+      </div>
+    </div>
+
+    <div class="flow-arrows">↕ ↕ ↕</div>
+
+    <div class="arch-layer" data-layer="Layer 5 — Data Layer (System of Record)">
+      <div class="layer-nodes">
+        <div class="node" data-color="amber"><div class="status status-live"></div><div class="icon">🗄️</div><div class="name">Wix CMS</div><div class="role">Deal Room (6 Collections)</div></div>
+        <div class="node" data-color="blue"><div class="status status-live"></div><div class="icon">📁</div><div class="name">SharePoint</div><div class="role">RS Enterprise (45GB)</div></div>
+        <div class="node" data-color="blue"><div class="status status-config"></div><div class="icon">💰</div><div class="name">Business Central</div><div class="role">Financials + Capital</div></div>
+        <div class="node" data-color="blue"><div class="status status-config"></div><div class="icon">👥</div><div class="name">Dynamics 365 CRM</div><div class="role">Contacts + Pipeline</div></div>
+      </div>
+    </div>
+
+    <div class="flow-arrows">↕ ↕ ↕</div>
+
+    <div class="arch-layer" data-layer="Layer 6 — Client-Facing Interfaces">
+      <div class="layer-nodes">
+        <div class="node" data-color="amber"><div class="status status-live"></div><div class="icon">🌐</div><div class="name">Wix Sites</div><div class="role">RS&Co. + AREAops</div></div>
+        <div class="node" data-color="blue"><div class="status status-config"></div><div class="icon">💬</div><div class="name">Teams</div><div class="role">Internal Comms + Agents</div></div>
+        <div class="node" data-color="blue"><div class="status status-config"></div><div class="icon">📨</div><div class="name">Outlook</div><div class="role">Client Comms + Automations</div></div>
+        <div class="node" data-color="amber"><div class="status status-config"></div><div class="icon">📱</div><div class="name">Wix Members Portal</div><div class="role">Investor Deal Room Access</div></div>
+      </div>
+    </div>
+
+    <div class="arch-layer" data-layer="Layer 7 — Legacy / Decommission Queue" style="border-color: rgba(220,38,38,0.2); margin-top: 12px;">
+      <div class="layer-nodes">
+        <div class="node" data-color="red"><div class="status status-retire"></div><div class="icon">📋</div><div class="name">Smartsheet</div><div class="role">→ SharePoint + Planner</div></div>
+        <div class="node" data-color="red"><div class="status status-retire"></div><div class="icon">🎨</div><div class="name">Canva</div><div class="role">→ Designer + SharePoint</div></div>
+        <div class="node" data-color="red"><div class="status status-retire"></div><div class="icon">📄</div><div class="name">Typeset</div><div class="role">→ Claude + Word</div></div>
+        <div class="node" data-color="red"><div class="status status-retire"></div><div class="icon">📢</div><div class="name">MarketingBlocks</div><div class="role">→ Copilot + Wix</div></div>
+        <div class="node" data-color="red"><div class="status status-retire"></div><div class="icon">🏢</div><div class="name">CREOP</div><div class="role">→ Wix Deal Room</div></div>
+        <div class="node" data-color="red"><div class="status status-retire"></div><div class="icon">📈</div><div class="name">Pipedrive</div><div class="role">→ Dynamics 365 CRM</div></div>
+        <div class="node" data-color="orange"><div class="status status-config"></div><div class="icon">🎬</div><div class="name">Adobe</div><div class="role">Evaluate: Keep CC / Retire</div></div>
+        <div class="node" data-color="orange"><div class="status status-config"></div><div class="icon">💜</div><div class="name">Loveable</div><div class="role">Evaluate: Archive Prototypes</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section" id="agents">
+  <div class="section-title">Agentic Staff — Role-Based Operating Model</div>
+  <div class="section-subtitle">Each agent has a defined role, platform assignment, and non-overlapping responsibilities. Zero redundancy. Every agent reports to the Executive Dashboard as a unified command layer.</div>
+
+  <div class="agent-grid">
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-avatar" style="background:rgba(124,58,237,0.1)">🧠</div>
+        <div><div class="agent-name">Chief Strategy Agent</div><div class="agent-title">Claude (claude.ai)</div></div>
+      </div>
+      <div class="agent-meta">
+        <span class="agent-tag tag-platform">Anthropic</span>
+        <span class="agent-tag tag-function">Strategy</span>
+        <span class="agent-tag tag-priority">Executive</span>
+      </div>
+      <ul class="agent-resp">
+        <li>Enterprise architecture design and planning</li>
+        <li>Playbook and framework generation</li>
+        <li>Strategic document authoring (DOCX, PDF)</li>
+        <li>Cross-platform integration specifications</li>
+        <li>Operating model and organizational design</li>
+      </ul>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-avatar" style="background:rgba(124,58,237,0.1)">⚡</div>
+        <div><div class="agent-name">Chief Engineering Agent</div><div class="agent-title">Claude Code (VS Code)</div></div>
+      </div>
+      <div class="agent-meta">
+        <span class="agent-tag tag-platform">Anthropic</span>
+        <span class="agent-tag tag-function">Engineering</span>
+        <span class="agent-tag tag-priority">Execution</span>
+      </div>
+      <ul class="agent-resp">
+        <li>Codebase development and deployment</li>
+        <li>Azure DevOps pipeline configuration</li>
+        <li>SharePoint/M365 administration scripts</li>
+        <li>GitHub repo management and CI/CD</li>
+        <li>Wix Velo backend module deployment</li>
+      </ul>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-avatar" style="background:rgba(22,163,74,0.1)">🔮</div>
+        <div><div class="agent-name">Content & Analysis Agent</div><div class="agent-title">OpenAI GPT-4</div></div>
+      </div>
+      <div class="agent-meta">
+        <span class="agent-tag tag-platform">OpenAI</span>
+        <span class="agent-tag tag-function">Content</span>
+        <span class="agent-tag tag-function">Analysis</span>
+      </div>
+      <ul class="agent-resp">
+        <li>Marketing copy and campaign content</li>
+        <li>Deal document summarization and extraction</li>
+        <li>Financial model analysis and commentary</li>
+        <li>Investor memo and pitch deck drafting</li>
+        <li>SEO content for Wix sites</li>
+      </ul>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-avatar" style="background:rgba(22,163,74,0.1)">💻</div>
+        <div><div class="agent-name">Rapid Prototyping Agent</div><div class="agent-title">OpenAI Codex / CLI</div></div>
+      </div>
+      <div class="agent-meta">
+        <span class="agent-tag tag-platform">OpenAI</span>
+        <span class="agent-tag tag-function">Code Gen</span>
+      </div>
+      <ul class="agent-resp">
+        <li>Quick script generation (Python, JS, PowerShell)</li>
+        <li>Data transformation and ETL scripts</li>
+        <li>API connector prototypes</li>
+        <li>One-off automation scripts</li>
+        <li>Code review and refactoring support</li>
+      </ul>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-avatar" style="background:rgba(8,145,178,0.1)">📊</div>
+        <div><div class="agent-name">Deal Intake Agent</div><div class="agent-title">Copilot Studio</div></div>
+      </div>
+      <div class="agent-meta">
+        <span class="agent-tag tag-platform">Microsoft</span>
+        <span class="agent-tag tag-function">CRM</span>
+        <span class="agent-tag tag-function">Intake</span>
+      </div>
+      <ul class="agent-resp">
+        <li>Guided deal submission from sponsors/brokers</li>
+        <li>Property and financial data collection</li>
+        <li>Document upload routing to SharePoint</li>
+        <li>Draft deal record creation in Wix CMS</li>
+        <li>Teams notification to deal team</li>
+      </ul>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-avatar" style="background:rgba(8,145,178,0.1)">💬</div>
+        <div><div class="agent-name">Investor Q&A Agent</div><div class="agent-title">Copilot Studio</div></div>
+      </div>
+      <div class="agent-meta">
+        <span class="agent-tag tag-platform">Microsoft</span>
+        <span class="agent-tag tag-function">Investor Relations</span>
+      </div>
+      <ul class="agent-resp">
+        <li>Answer deal-specific investor questions</li>
+        <li>NDA-gated document access links</li>
+        <li>Key date summaries (LOI, close, offers)</li>
+        <li>Route complex questions to broker</li>
+        <li>Entra ID authentication + access control</li>
+      </ul>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-avatar" style="background:rgba(8,145,178,0.1)">📋</div>
+        <div><div class="agent-name">Escrow Status Agent</div><div class="agent-title">Copilot Studio</div></div>
+      </div>
+      <div class="agent-meta">
+        <span class="agent-tag tag-platform">Microsoft</span>
+        <span class="agent-tag tag-function">Transaction Mgmt</span>
+      </div>
+      <ul class="agent-resp">
+        <li>Milestone status updates to deal parties</li>
+        <li>Contingency and due date tracking</li>
+        <li>Overdue item escalation alerts</li>
+        <li>Stakeholder-specific access views</li>
+        <li>Closing checklist progression</li>
+      </ul>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-avatar" style="background:rgba(8,145,178,0.1)">🏢</div>
+        <div><div class="agent-name">Internal Knowledge Agent</div><div class="agent-title">Copilot Studio</div></div>
+      </div>
+      <div class="agent-meta">
+        <span class="agent-tag tag-platform">Microsoft</span>
+        <span class="agent-tag tag-function">Knowledge Base</span>
+      </div>
+      <ul class="agent-resp">
+        <li>Internal team Q&A across all deal data</li>
+        <li>Process documentation retrieval</li>
+        <li>Contact and stakeholder lookup</li>
+        <li>SharePoint document search and summarize</li>
+        <li>Onboarding support for new team members</li>
+      </ul>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-avatar" style="background:rgba(37,99,235,0.1)">⚙️</div>
+        <div><div class="agent-name">Workflow Orchestrator</div><div class="agent-title">Power Automate</div></div>
+      </div>
+      <div class="agent-meta">
+        <span class="agent-tag tag-platform">Microsoft</span>
+        <span class="agent-tag tag-function">Automation</span>
+        <span class="agent-tag tag-priority">Core</span>
+      </div>
+      <ul class="agent-resp">
+        <li>NDA → Teams → CRM event chain</li>
+        <li>Document upload → SharePoint sync</li>
+        <li>Deal status → pipeline + financials update</li>
+        <li>Milestone due date → reminder automation</li>
+        <li>Cross-system error handling and retry</li>
+      </ul>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-avatar" style="background:rgba(217,119,6,0.1)">🔌</div>
+        <div><div class="agent-name">MCP Integration Agent</div><div class="agent-title">MCP Servers (Wix + Tools)</div></div>
+      </div>
+      <div class="agent-meta">
+        <span class="agent-tag tag-platform">MCP Protocol</span>
+        <span class="agent-tag tag-function">Connectors</span>
+      </div>
+      <ul class="agent-resp">
+        <li>Wix CMS read/write via MCP</li>
+        <li>Real-time site management from Claude</li>
+        <li>AREAops site data operations</li>
+        <li>Tool-use bridging between AI and platforms</li>
+        <li>API abstraction for agent-to-system calls</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="flows">
+  <div class="section-title">Data Flow Architecture</div>
+  <div class="section-subtitle">Primary data flows across the enterprise. Each flow is unidirectional or bi-directional with a clear system of record designation.</div>
+
+  <div class="flow-diagram" style="gap:24px;">
+    <div style="margin-bottom:8px;font-size:14px;font-weight:600;color:var(--accent-blue);">Deal Lifecycle Flow</div>
+    <div class="flow-row">
+      <div class="flow-box" style="border-color:var(--accent-purple);color:var(--accent-purple)">Deal Intake Agent</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:var(--accent-amber);color:var(--accent-amber)">Wix CMS (DealRoomDeals)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:var(--accent-blue);color:var(--accent-blue)">Power Automate</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:var(--accent-cyan);color:var(--accent-cyan)">SharePoint + Teams + CRM</div>
+    </div>
+
+    <div style="margin-bottom:8px;font-size:14px;font-weight:600;color:var(--accent-teal);">NDA Execution Flow</div>
+    <div class="flow-row">
+      <div class="flow-box" style="border-color:var(--accent-amber);color:var(--accent-amber)">Wix Members Portal</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:var(--accent-amber);color:var(--accent-amber)">Wix CMS (DealRoomNDAs)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:var(--accent-blue);color:var(--accent-blue)">Power Automate</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:var(--accent-cyan);color:var(--accent-cyan)">Teams + Outlook + Dynamics 365</div>
+    </div>
+
+    <div style="margin-bottom:8px;font-size:14px;font-weight:600;color:var(--accent-green);">Document Management Flow</div>
+    <div class="flow-row">
+      <div class="flow-box" style="border-color:var(--accent-amber);color:var(--accent-amber)">Wix Media Manager</div>
+      <div class="flow-arrow">↔</div>
+      <div class="flow-box" style="border-color:var(--accent-blue);color:var(--accent-blue)">SharePoint /Deals/{slug}/</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:var(--accent-cyan);color:var(--accent-cyan)">Power BI (Doc Analytics)</div>
+    </div>
+
+    <div style="margin-bottom:8px;font-size:14px;font-weight:600;color:var(--accent-amber);">Financial Tracking Flow</div>
+    <div class="flow-row">
+      <div class="flow-box" style="border-color:var(--accent-amber);color:var(--accent-amber)">Wix CMS (Deal → In Escrow)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:var(--accent-blue);color:var(--accent-blue)">Power Automate</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:var(--accent-blue);color:var(--accent-blue)">Business Central (Projects)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:var(--accent-cyan);color:var(--accent-cyan)">Power BI (Portfolio)</div>
+    </div>
+
+    <div style="margin-bottom:8px;font-size:14px;font-weight:600;color:var(--accent-purple);">Development & Deployment Flow</div>
+    <div class="flow-row">
+      <div class="flow-box" style="border-color:var(--accent-purple);color:var(--accent-purple)">Claude Code (VS Code)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:var(--accent-teal);color:var(--accent-teal)">GitHub (RS-Co.Enterprise)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:var(--accent-cyan);color:var(--accent-cyan)">Azure DevOps (CI/CD)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:var(--accent-amber);color:var(--accent-amber)">Wix Velo + SharePoint</div>
+    </div>
+
+    <div style="margin-bottom:8px;font-size:14px;font-weight:600;color:var(--accent-pink);">AI Agent Communication Flow</div>
+    <div class="flow-row">
+      <div class="flow-box" style="border-color:var(--accent-purple);color:var(--accent-purple)">Claude (Strategy)</div>
+      <div class="flow-arrow">↔</div>
+      <div class="flow-box" style="border-color:var(--accent-teal);color:var(--accent-teal)">MCP Servers</div>
+      <div class="flow-arrow">↔</div>
+      <div class="flow-box" style="border-color:var(--accent-amber);color:var(--accent-amber)">Wix CMS + Sites</div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-box" style="border-color:var(--accent-green);color:var(--accent-green)">OpenAI (Content)</div>
+      <div class="flow-arrow">↔</div>
+      <div class="flow-box" style="border-color:var(--accent-blue);color:var(--accent-blue)">Copilot Studio</div>
+      <div class="flow-arrow">↔</div>
+      <div class="flow-box" style="border-color:var(--accent-blue);color:var(--accent-blue)">Teams + Dynamics 365</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="dashboard">
+  <div class="section-title">Executive Center Dashboard — Composition Model</div>
+  <div class="section-subtitle">Single-pane-of-glass command center embedded in Power BI (primary) with Teams and SharePoint surface options. All verticals report into one unified view.</div>
+
+  <div class="dash-grid">
+    <div class="dash-card primary">
+      <h4>🎯 RS&Co. Executive Command Center</h4>
+      <div class="dash-sub">Power BI Embedded → Teams Tab → SharePoint Page</div>
+      <ul>
+        <li>Unified KPI ribbon: Total AUM, Active Deals, Pipeline Value, Investor Count, Revenue MTD</li>
+        <li>Real-time deal pipeline funnel (Draft → Active → Under LOI → In Escrow → Closed)</li>
+        <li>Cross-vertical health scorecard with RAG status indicators</li>
+        <li>AI agent activity monitor showing active workflows and completions</li>
+      </ul>
+    </div>
+    <div class="dash-card"><h4>Deal Pipeline</h4><div class="dash-sub">Source: Wix CMS → Power BI</div><ul><li>Funnel by status stage</li><li>Asset class distribution</li><li>Weighted avg cap rate</li><li>Geographic heat map</li></ul></div>
+    <div class="dash-card"><h4>Investor Activity</h4><div class="dash-sub">Source: NDAs + Activity Log</div><ul><li>NDA submissions by deal</li><li>Investor type segmentation</li><li>Access grant conversion rate</li><li>Document engagement metrics</li></ul></div>
+    <div class="dash-card"><h4>Financial Performance</h4><div class="dash-sub">Source: Business Central</div><ul><li>Capital commitments tracker</li><li>Fee schedule and earned revenue</li><li>Portfolio IRR performance</li><li>Cash flow and distributions</li></ul></div>
+    <div class="dash-card"><h4>CRM & Sales</h4><div class="dash-sub">Source: Dynamics 365</div><ul><li>Lead pipeline and conversion</li><li>Contact engagement scoring</li><li>Opportunity stage tracking</li><li>Broker performance metrics</li></ul></div>
+    <div class="dash-card"><h4>Project & Asset Mgmt</h4><div class="dash-sub">Source: Wix CMS + Planner</div><ul><li>Active project status board</li><li>Milestone completion rates</li><li>Stakeholder assignments</li><li>Escrow room health</li></ul></div>
+    <div class="dash-card"><h4>Marketing & Content</h4><div class="dash-sub">Source: Wix Analytics + CRM</div><ul><li>Site traffic and engagement</li><li>Form intake conversion</li><li>Email campaign performance</li><li>Content pipeline status</li></ul></div>
+    <div class="dash-card"><h4>Document Intelligence</h4><div class="dash-sub">Source: SharePoint + Activity Log</div><ul><li>Document library analytics</li><li>Version control audit trail</li><li>Access and download tracking</li><li>Compliance and retention</li></ul></div>
+    <div class="dash-card"><h4>AI Operations Monitor</h4><div class="dash-sub">Source: All Agent Platforms</div><ul><li>Agent utilization rates</li><li>Workflow completion metrics</li><li>Error and retry tracking</li><li>API call volumes and latency</li></ul></div>
+  </div>
+</div>
+
+<div class="section" id="operating">
+  <div class="section-title">Enterprise Operating Model</div>
+  <div class="section-subtitle">Governance structure, taxonomy standards, and operational principles for running the RS&Co. platform ecosystem at institutional scale.</div>
+
+  <div class="op-model">
+    <div class="op-card full"><h4>Governance Principle</h4><div class="op-sub">Single Source of Truth Architecture</div><p>Every data entity has exactly one system of record. Wix CMS owns deal data. SharePoint owns documents. Business Central owns financials. Dynamics 365 owns contacts and pipeline. All other systems consume from these sources via Power Automate or API, never duplicate. If a data point can be derived, it is calculated on read, not stored redundantly.</p></div>
+    <div class="op-card"><h4>File & Document Taxonomy</h4><div class="op-sub">Uniform Naming Convention</div><p>All files follow: [Entity]-[Category]-[Description]-[Version].[ext]. SharePoint enforces 9 top-level categories (Executive, Corporate, Development, Projects, Brands, Marketing, Ventures, People, Archive). Deal documents use /Deals/{dealSlug}/{category}/ structure. No loose files at root. No personal naming conventions.</p></div>
+    <div class="op-card"><h4>Agent Deconfliction Protocol</h4><div class="op-sub">Zero Redundancy</div><p>Each agent has a primary domain and platform. Claude.ai handles strategy and architecture. Claude Code handles engineering and deployment. OpenAI handles content and analysis. Copilot Studio handles client-facing interactions. Power Automate handles event-driven workflows. No two agents perform the same function on the same platform.</p></div>
+    <div class="op-card"><h4>Vertical Integration Model</h4><div class="op-sub">RS&Co. Brand Hierarchy</div><p>All verticals (Enterprise, Acumen, Advisory, Apeiron, Apogee, AREAops, LUCY) share the same infrastructure stack. Each vertical has its own Wix CMS collections, SharePoint subfolder, and CRM pipeline. Shared services include authentication, payment processing, email automations, and analytics. Build once, deploy across all brands.</p></div>
+    <div class="op-card"><h4>Security & Access Model</h4><div class="op-sub">Role-Based Access Control</div><p>Four-tier access model: Admin (full control), Escrow (deal-party access), NDA (investor-level), Public (anonymous). Enforced consistently across Wix Members, SharePoint groups, Dynamics 365 security roles, and Copilot Studio agent access checks. All authentication flows through Entra ID for Microsoft services, Wix Members for client-facing.</p></div>
+    <div class="op-card"><h4>Continuous Improvement Cycle</h4><div class="op-sub">Weekly Cadence</div><p>Monday: Power BI dashboard review, pipeline health check. Wednesday: Agent performance review, workflow error audit. Friday: Backlog grooming in Azure DevOps, sprint planning for next week. Monthly: Architecture review, decommission progress, vendor cost analysis. Quarterly: Strategic alignment review, roadmap update.</p></div>
+  </div>
+</div>
+
+<div class="section" id="decommission">
+  <div class="section-title">Legacy System Decommission Plan</div>
+  <div class="section-subtitle">Data migration, function absorption, and retirement schedule for redundant platforms. Each system is analyzed for data preservation requirements before decommission.</div>
+
+  <table class="decomm-table">
+    <thead><tr><th>System</th><th>Current Function</th><th>Absorbing Platform</th><th>Data Action</th><th>Status</th><th>Timeline</th></tr></thead>
+    <tbody>
+      <tr><td style="font-weight:600;color:var(--gray-900)">Pipedrive</td><td>CRM & deal pipeline</td><td>Dynamics 365 CRM + Wix CMS</td><td>Export all contacts, deals, activities → import to D365.</td><td><span class="badge badge-retire">Retire</span></td><td>Weeks 3-4</td></tr>
+      <tr><td style="font-weight:600;color:var(--gray-900)">CREOP</td><td>CRE deal room platform</td><td>Wix Deal Room (6 CMS collections)</td><td>Export all deal data, documents, NDA records.</td><td><span class="badge badge-retire">Retire</span></td><td>Weeks 2-3</td></tr>
+      <tr><td style="font-weight:600;color:var(--gray-900)">Smartsheet</td><td>Project tracking & sheets</td><td>SharePoint Lists + Planner + Power BI</td><td>Export all sheets as XLSX → import to SharePoint.</td><td><span class="badge badge-retire">Retire</span></td><td>Weeks 2-4</td></tr>
+      <tr><td style="font-weight:600;color:var(--gray-900)">MarketingBlocks</td><td>AI marketing content</td><td>OpenAI GPT + Copilot Studio + Wix Ascend</td><td>Export all templates. Replace with GPT agents.</td><td><span class="badge badge-retire">Retire</span></td><td>Weeks 3-4</td></tr>
+      <tr><td style="font-weight:600;color:var(--gray-900)">Typeset</td><td>Document formatting</td><td>Claude + Microsoft Word</td><td>Export all documents to SharePoint.</td><td><span class="badge badge-retire">Retire</span></td><td>Weeks 1-2</td></tr>
+      <tr><td style="font-weight:600;color:var(--gray-900)">Canva</td><td>Design & branding</td><td>Microsoft Designer + SharePoint</td><td>Export all brand assets to SharePoint.</td><td><span class="badge badge-absorb">Absorb</span></td><td>Weeks 4-6</td></tr>
+      <tr><td style="font-weight:600;color:var(--gray-900)">Adobe CC</td><td>Professional design & video</td><td>Evaluate: Keep selective tools</td><td>Audit active licenses. Archive project files.</td><td><span class="badge badge-archive">Evaluate</span></td><td>Weeks 5-6</td></tr>
+      <tr><td style="font-weight:600;color:var(--gray-900)">Loveable</td><td>UI/UX prototyping</td><td>GitHub (code) + SharePoint (assets)</td><td>Export code to GitHub. Archive design files.</td><td><span class="badge badge-archive">Archive</span></td><td>Weeks 3-4</td></tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:32px; padding:20px; border:1px solid rgba(22,163,74,0.2); border-radius:12px; background:rgba(22,163,74,0.04);">
+    <div style="font-size:14px;font-weight:600;color:var(--accent-green);margin-bottom:8px;">Estimated Annual Savings Post-Decommission</div>
+    <div style="font-size:13px;color:var(--text-secondary);line-height:1.8;">
+      Pipedrive + CREOP + Smartsheet + MarketingBlocks + Typeset + Canva Pro + partial Adobe reduction → <span style="color:var(--accent-green);font-weight:600;">estimated $4,000-8,000+ annual cost elimination</span>, consolidated into existing Microsoft 365 and Wix subscriptions.
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+document.querySelectorAll('nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

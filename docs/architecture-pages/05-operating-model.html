@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operating Model - RS&Co. Enterprise</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --white: #FFFFFF;
+  --gray-50: #F8FAFC;
+  --gray-100: #F1F5F9;
+  --gray-200: #E2E8F0;
+  --gray-300: #CBD5E1;
+  --gray-400: #94A3B8;
+  --gray-500: #64748B;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1E293B;
+  --gray-900: #0F172A;
+  --accent-blue: #2563EB;
+  --accent-cyan: #0891B2;
+  --accent-teal: #0D9488;
+  --accent-green: #16A34A;
+  --accent-amber: #D97706;
+  --accent-purple: #7C3AED;
+  --text-primary: #1E293B;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --border: rgba(0, 0, 0, 0.08);
+  --shadow: rgba(0, 0, 0, 0.05);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--gray-50);
+  color: var(--text-primary);
+}
+
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+header {
+  position: relative; z-index: 10;
+  padding: 40px 60px 30px;
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: flex-end;
+  background: var(--white);
+}
+
+.logo { display: flex; flex-direction: column; gap: 4px; }
+.logo h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; color: var(--gray-900); }
+.logo h1 span { color: var(--accent-blue); }
+.logo p { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px; font-weight: 500; }
+.version { font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+nav {
+  position: relative; z-index: 10;
+  display: flex; gap: 4px; padding: 12px 60px;
+  border-bottom: 1px solid var(--border);
+  background: var(--white);
+  position: sticky; top: 0;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+
+nav a {
+  background: none; border: 1px solid transparent; color: var(--text-secondary);
+  padding: 8px 18px; border-radius: 6px; font-family: 'DM Sans'; font-size: 13px;
+  font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none;
+}
+nav a:hover { color: var(--text-primary); background: var(--gray-100); }
+nav a.active {
+  color: var(--accent-blue); border-color: var(--accent-blue);
+  background: rgba(37,99,235,0.06);
+}
+
+main { position: relative; z-index: 5; padding: 40px 60px; }
+
+.section-title {
+  font-size: 28px; font-weight: 700; margin-bottom: 8px; color: var(--gray-900);
+}
+.section-subtitle {
+  font-size: 15px; color: var(--text-muted); margin-bottom: 40px; max-width: 900px; line-height: 1.7;
+}
+
+.op-model {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;
+}
+
+.op-card {
+  border: 1px solid var(--border); border-radius: 16px;
+  padding: 28px; background: var(--white);
+  box-shadow: 0 2px 8px var(--shadow);
+  transition: all 0.3s;
+}
+
+.op-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--shadow);
+}
+
+.op-card h4 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.op-card .op-sub {
+  font-size: 11px;
+  color: var(--accent-blue);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+}
+
+.op-card p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.op-card.full { grid-column: span 2; }
+
+.op-card.full p {
+  font-size: 15px;
+}
+
+.principle-highlight {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--gray-50);
+  border-left: 3px solid var(--accent-blue);
+  border-radius: 0 8px 8px 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.principle-highlight strong {
+  color: var(--gray-900);
+}
+
+.cadence-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.cadence-item {
+  padding: 14px;
+  background: var(--gray-50);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.cadence-item .day {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-blue);
+  margin-bottom: 6px;
+}
+
+.cadence-item .task {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.taxonomy-example {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--gray-900);
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent-green);
+  overflow-x: auto;
+}
+
+.access-tiers {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.access-tier {
+  padding: 16px;
+  background: var(--gray-50);
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+.access-tier .level {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.access-tier .desc {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.tier-admin .level { color: var(--accent-purple); }
+.tier-escrow .level { color: var(--accent-blue); }
+.tier-nda .level { color: var(--accent-amber); }
+.tier-public .level { color: var(--accent-teal); }
+
+@media (max-width: 1200px) {
+  header, nav, main { padding-left: 30px; padding-right: 30px; }
+  .op-model { grid-template-columns: 1fr; }
+  .op-card.full { grid-column: span 1; }
+  .cadence-grid { grid-template-columns: repeat(2, 1fr); }
+  .access-tiers { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  nav { overflow-x: auto; }
+  .cadence-grid, .access-tiers { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<header>
+  <div class="logo">
+    <h1>RS<span>&</span>Co.</h1>
+    <p>Enterprise Architecture</p>
+  </div>
+  <div class="version">v1.1 | February 5, 2026 | Confidential</div>
+</header>
+
+<nav>
+  <a href="00-index.html">Home</a>
+  <a href="01-system-architecture.html">System Architecture</a>
+  <a href="02-agentic-staff.html">Agentic Staff</a>
+  <a href="03-data-flows.html">Data Flows</a>
+  <a href="04-executive-dashboard.html">Executive Dashboard</a>
+  <a href="05-operating-model.html" class="active">Operating Model</a>
+  <a href="06-decommission-plan.html">Decommission Plan</a>
+</nav>
+
+<main>
+  <div class="section-title">Enterprise Operating Model</div>
+  <div class="section-subtitle">Governance structure, taxonomy standards, and operational principles for running the RS&Co. platform ecosystem at institutional scale. These principles ensure consistency, security, and efficiency across all systems.</div>
+
+  <div class="op-model">
+    <div class="op-card full">
+      <h4>📐 Governance Principle</h4>
+      <div class="op-sub">Single Source of Truth Architecture</div>
+      <p>Every data entity has exactly one system of record. Wix CMS owns deal data. SharePoint owns documents. Business Central owns financials. Dynamics 365 owns contacts and pipeline. All other systems consume from these sources via Power Automate or API, never duplicate. If a data point can be derived, it is calculated on read, not stored redundantly.</p>
+      <div class="principle-highlight">
+        <strong>Golden Rule:</strong> If you're unsure where data lives, check the system of record. If you're creating new data, ensure it's in the correct system of record from the start.
+      </div>
+    </div>
+
+    <div class="op-card">
+      <h4>📁 File & Document Taxonomy</h4>
+      <div class="op-sub">Uniform Naming Convention</div>
+      <p>All files follow: <code>[Entity]-[Category]-[Description]-[Version].[ext]</code>. SharePoint enforces 6 top-level categories (Executive, Corporate, Brands, Marketing, People, Projects, Archive). Deal documents use <code>/Deals/{dealSlug}/{category}/</code> structure. No loose files at root. No personal naming conventions.</p>
+      <div class="taxonomy-example">
+/006 - Projects/<br>
+├── 001 - 1050 Murphy Ave/<br>
+│   ├── 01-Legal/<br>
+│   ├── 02-Financial/<br>
+│   ├── 03-Due-Diligence/<br>
+│   └── 04-Marketing/<br>
+├── 002 - 41 Marietta/<br>
+└── ...
+      </div>
+    </div>
+
+    <div class="op-card">
+      <h4>🤖 Agent Deconfliction Protocol</h4>
+      <div class="op-sub">Zero Redundancy</div>
+      <p>Each agent has a primary domain and platform. Claude.ai handles strategy and architecture. Claude Code handles engineering and deployment. OpenAI handles content and analysis. Copilot Studio handles client-facing interactions. Power Automate handles event-driven workflows. No two agents perform the same function on the same platform.</p>
+      <div class="principle-highlight">
+        <strong>Rule:</strong> Before assigning a task to an agent, verify no other agent owns that domain. When in doubt, escalate to Chief Strategy Agent (Claude) for routing.
+      </div>
+    </div>
+
+    <div class="op-card">
+      <h4>🏢 Vertical Integration Model</h4>
+      <div class="op-sub">RS&Co. Brand Hierarchy</div>
+      <p>All verticals (Enterprise, Acumen, Advisory, Apeiron, Apogee, AREAops, LUCY) share the same infrastructure stack. Each vertical has its own Wix CMS collections, SharePoint subfolder, and CRM pipeline. Shared services include authentication, payment processing, email automations, and analytics. Build once, deploy across all brands.</p>
+    </div>
+
+    <div class="op-card">
+      <h4>🔐 Security & Access Model</h4>
+      <div class="op-sub">Role-Based Access Control</div>
+      <p>Four-tier access model enforced consistently across Wix Members, SharePoint groups, Dynamics 365 security roles, and Copilot Studio agent access checks. All authentication flows through Entra ID for Microsoft services, Wix Members for client-facing portals.</p>
+      <div class="access-tiers">
+        <div class="access-tier tier-admin">
+          <div class="level">Admin</div>
+          <div class="desc">Full control across all systems</div>
+        </div>
+        <div class="access-tier tier-escrow">
+          <div class="level">Escrow</div>
+          <div class="desc">Deal-party access to transaction room</div>
+        </div>
+        <div class="access-tier tier-nda">
+          <div class="level">NDA</div>
+          <div class="desc">Investor-level document access</div>
+        </div>
+        <div class="access-tier tier-public">
+          <div class="level">Public</div>
+          <div class="desc">Anonymous site visitors</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="op-card">
+      <h4>📅 Continuous Improvement Cycle</h4>
+      <div class="op-sub">Weekly Cadence</div>
+      <p>Structured operational rhythm ensures consistent monitoring, improvement, and strategic alignment across all systems and teams.</p>
+      <div class="cadence-grid">
+        <div class="cadence-item">
+          <div class="day">Monday</div>
+          <div class="task">Power BI dashboard review, pipeline health check</div>
+        </div>
+        <div class="cadence-item">
+          <div class="day">Wednesday</div>
+          <div class="task">Agent performance review, workflow error audit</div>
+        </div>
+        <div class="cadence-item">
+          <div class="day">Friday</div>
+          <div class="task">Backlog grooming in Azure DevOps, sprint planning</div>
+        </div>
+        <div class="cadence-item">
+          <div class="day">Monthly</div>
+          <div class="task">Architecture review, decommission progress, vendor cost analysis</div>
+        </div>
+      </div>
+      <div class="principle-highlight" style="margin-top: 16px;">
+        <strong>Quarterly:</strong> Strategic alignment review, roadmap update, stakeholder presentation.
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

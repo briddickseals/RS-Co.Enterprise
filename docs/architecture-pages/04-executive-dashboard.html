@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Executive Dashboard - RS&Co. Enterprise</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --white: #FFFFFF;
+  --gray-50: #F8FAFC;
+  --gray-100: #F1F5F9;
+  --gray-200: #E2E8F0;
+  --gray-300: #CBD5E1;
+  --gray-400: #94A3B8;
+  --gray-500: #64748B;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1E293B;
+  --gray-900: #0F172A;
+  --accent-blue: #2563EB;
+  --accent-cyan: #0891B2;
+  --accent-teal: #0D9488;
+  --accent-green: #16A34A;
+  --accent-amber: #D97706;
+  --accent-purple: #7C3AED;
+  --text-primary: #1E293B;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --border: rgba(0, 0, 0, 0.08);
+  --shadow: rgba(0, 0, 0, 0.05);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--gray-50);
+  color: var(--text-primary);
+}
+
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+header {
+  position: relative; z-index: 10;
+  padding: 40px 60px 30px;
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: flex-end;
+  background: var(--white);
+}
+
+.logo { display: flex; flex-direction: column; gap: 4px; }
+.logo h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; color: var(--gray-900); }
+.logo h1 span { color: var(--accent-blue); }
+.logo p { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px; font-weight: 500; }
+.version { font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+nav {
+  position: relative; z-index: 10;
+  display: flex; gap: 4px; padding: 12px 60px;
+  border-bottom: 1px solid var(--border);
+  background: var(--white);
+  position: sticky; top: 0;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+
+nav a {
+  background: none; border: 1px solid transparent; color: var(--text-secondary);
+  padding: 8px 18px; border-radius: 6px; font-family: 'DM Sans'; font-size: 13px;
+  font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none;
+}
+nav a:hover { color: var(--text-primary); background: var(--gray-100); }
+nav a.active {
+  color: var(--accent-blue); border-color: var(--accent-blue);
+  background: rgba(37,99,235,0.06);
+}
+
+main { position: relative; z-index: 5; padding: 40px 60px; }
+
+.section-title {
+  font-size: 28px; font-weight: 700; margin-bottom: 8px; color: var(--gray-900);
+}
+.section-subtitle {
+  font-size: 15px; color: var(--text-muted); margin-bottom: 40px; max-width: 900px; line-height: 1.7;
+}
+
+.dash-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+
+.dash-card {
+  border: 1px solid var(--border); border-radius: 16px;
+  padding: 24px; background: var(--white);
+  box-shadow: 0 2px 8px var(--shadow);
+  transition: all 0.3s;
+}
+
+.dash-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--shadow);
+}
+
+.dash-card h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dash-card .dash-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 8px;
+  background: var(--gray-100);
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.dash-card ul { list-style: none; }
+.dash-card li {
+  font-size: 13px; color: var(--text-secondary); padding: 6px 0;
+  padding-left: 20px; position: relative;
+  border-bottom: 1px solid var(--gray-100);
+}
+.dash-card li:last-child { border-bottom: none; }
+.dash-card li::before {
+  content: "◆";
+  position: absolute;
+  left: 0;
+  font-size: 7px;
+  top: 10px;
+  color: var(--accent-blue);
+}
+
+.dash-card.primary {
+  grid-column: span 3;
+  border-color: rgba(37,99,235,0.2);
+  background: linear-gradient(135deg, var(--white), var(--gray-50));
+}
+.dash-card.primary h4 { font-size: 20px; }
+.dash-card.primary ul {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0 24px;
+}
+
+.kpi-ribbon {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.kpi-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.kpi-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gray-900);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.kpi-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+.kpi-trend {
+  font-size: 12px;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+.kpi-trend.up { color: var(--accent-green); }
+.kpi-trend.down { color: var(--accent-amber); }
+
+.embed-section {
+  margin-top: 40px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+}
+
+.embed-section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 16px;
+}
+
+.embed-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.embed-option {
+  padding: 20px;
+  background: var(--gray-50);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.embed-option .icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.embed-option h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 4px;
+}
+
+.embed-option p {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+@media (max-width: 1200px) {
+  header, nav, main { padding-left: 30px; padding-right: 30px; }
+  .dash-grid { grid-template-columns: 1fr 1fr; }
+  .dash-card.primary { grid-column: span 2; }
+  .kpi-ribbon { grid-template-columns: repeat(3, 1fr); }
+  .embed-options { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .dash-grid { grid-template-columns: 1fr; }
+  .dash-card.primary { grid-column: span 1; }
+  .dash-card.primary ul { grid-template-columns: 1fr; }
+  .kpi-ribbon { grid-template-columns: repeat(2, 1fr); }
+  nav { overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<header>
+  <div class="logo">
+    <h1>RS<span>&</span>Co.</h1>
+    <p>Enterprise Architecture</p>
+  </div>
+  <div class="version">v1.1 | February 5, 2026 | Confidential</div>
+</header>
+
+<nav>
+  <a href="00-index.html">Home</a>
+  <a href="01-system-architecture.html">System Architecture</a>
+  <a href="02-agentic-staff.html">Agentic Staff</a>
+  <a href="03-data-flows.html">Data Flows</a>
+  <a href="04-executive-dashboard.html" class="active">Executive Dashboard</a>
+  <a href="05-operating-model.html">Operating Model</a>
+  <a href="06-decommission-plan.html">Decommission Plan</a>
+</nav>
+
+<main>
+  <div class="section-title">Executive Command Center — Dashboard Composition</div>
+  <div class="section-subtitle">Single-pane-of-glass command center embedded in Power BI (primary) with Teams and SharePoint surface options. All verticals report into one unified view with real-time KPIs and AI operations monitoring.</div>
+
+  <div class="kpi-ribbon">
+    <div class="kpi-card">
+      <div class="kpi-value">$--M</div>
+      <div class="kpi-label">Total AUM</div>
+      <div class="kpi-trend up">↑ Configuring</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">--</div>
+      <div class="kpi-label">Active Deals</div>
+      <div class="kpi-trend up">↑ Configuring</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">$--M</div>
+      <div class="kpi-label">Pipeline Value</div>
+      <div class="kpi-trend up">↑ Configuring</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">--</div>
+      <div class="kpi-label">Investor Count</div>
+      <div class="kpi-trend up">↑ Configuring</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">$--K</div>
+      <div class="kpi-label">Revenue MTD</div>
+      <div class="kpi-trend up">↑ Configuring</div>
+    </div>
+  </div>
+
+  <div class="dash-grid">
+    <div class="dash-card primary">
+      <h4>🎯 RS&Co. Executive Command Center</h4>
+      <div class="dash-sub">Power BI Embedded → Teams Tab → SharePoint Page</div>
+      <ul>
+        <li>Unified KPI ribbon: Total AUM, Active Deals, Pipeline Value, Investor Count, Revenue MTD</li>
+        <li>Real-time deal pipeline funnel (Draft → Active → Under LOI → In Escrow → Closed)</li>
+        <li>Cross-vertical health scorecard with RAG status indicators</li>
+        <li>AI agent activity monitor showing active workflows and completions</li>
+        <li>Document engagement analytics and access tracking</li>
+        <li>Investor activity heat map and NDA conversion metrics</li>
+      </ul>
+    </div>
+
+    <div class="dash-card">
+      <h4>📈 Deal Pipeline</h4>
+      <div class="dash-sub">Source: Wix CMS → Power BI</div>
+      <ul>
+        <li>Funnel by status stage</li>
+        <li>Asset class distribution</li>
+        <li>Weighted avg cap rate</li>
+        <li>Geographic heat map</li>
+        <li>Days in stage tracking</li>
+      </ul>
+    </div>
+
+    <div class="dash-card">
+      <h4>👥 Investor Activity</h4>
+      <div class="dash-sub">Source: NDAs + Activity Log</div>
+      <ul>
+        <li>NDA submissions by deal</li>
+        <li>Investor type segmentation</li>
+        <li>Access grant conversion rate</li>
+        <li>Document engagement metrics</li>
+        <li>Return visitor analysis</li>
+      </ul>
+    </div>
+
+    <div class="dash-card">
+      <h4>💰 Financial Performance</h4>
+      <div class="dash-sub">Source: Business Central</div>
+      <ul>
+        <li>Capital commitments tracker</li>
+        <li>Fee schedule and earned revenue</li>
+        <li>Portfolio IRR performance</li>
+        <li>Cash flow and distributions</li>
+        <li>Budget vs actual variance</li>
+      </ul>
+    </div>
+
+    <div class="dash-card">
+      <h4>🤝 CRM & Sales</h4>
+      <div class="dash-sub">Source: Dynamics 365</div>
+      <ul>
+        <li>Lead pipeline and conversion</li>
+        <li>Contact engagement scoring</li>
+        <li>Opportunity stage tracking</li>
+        <li>Broker performance metrics</li>
+        <li>Activity timeline feed</li>
+      </ul>
+    </div>
+
+    <div class="dash-card">
+      <h4>📋 Project & Asset Mgmt</h4>
+      <div class="dash-sub">Source: Wix CMS + Planner</div>
+      <ul>
+        <li>Active project status board</li>
+        <li>Milestone completion rates</li>
+        <li>Stakeholder assignments</li>
+        <li>Escrow room health</li>
+        <li>Due date countdown alerts</li>
+      </ul>
+    </div>
+
+    <div class="dash-card">
+      <h4>📣 Marketing & Content</h4>
+      <div class="dash-sub">Source: Wix Analytics + CRM</div>
+      <ul>
+        <li>Site traffic and engagement</li>
+        <li>Form intake conversion</li>
+        <li>Email campaign performance</li>
+        <li>Content pipeline status</li>
+        <li>SEO ranking tracker</li>
+      </ul>
+    </div>
+
+    <div class="dash-card">
+      <h4>📁 Document Intelligence</h4>
+      <div class="dash-sub">Source: SharePoint + Activity Log</div>
+      <ul>
+        <li>Document library analytics</li>
+        <li>Version control audit trail</li>
+        <li>Access and download tracking</li>
+        <li>Compliance and retention</li>
+        <li>Storage utilization</li>
+      </ul>
+    </div>
+
+    <div class="dash-card">
+      <h4>🤖 AI Operations Monitor</h4>
+      <div class="dash-sub">Source: All Agent Platforms</div>
+      <ul>
+        <li>Agent utilization rates</li>
+        <li>Workflow completion metrics</li>
+        <li>Error and retry tracking</li>
+        <li>API call volumes and latency</li>
+        <li>Cost per operation tracking</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="embed-section">
+    <h3>Dashboard Surface Options</h3>
+    <div class="embed-options">
+      <div class="embed-option">
+        <div class="icon">📊</div>
+        <h4>Power BI Service</h4>
+        <p>Primary dashboard host. Full interactive experience with drill-down, filtering, and real-time refresh.</p>
+      </div>
+      <div class="embed-option">
+        <div class="icon">💬</div>
+        <h4>Microsoft Teams Tab</h4>
+        <p>Embedded Power BI dashboard in Teams for quick access during meetings and daily standup.</p>
+      </div>
+      <div class="embed-option">
+        <div class="icon">📁</div>
+        <h4>SharePoint Page</h4>
+        <p>Dashboard widget on RS Enterprise SharePoint home page for document-centric workflows.</p>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Architecture - RS&Co. Enterprise</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --white: #FFFFFF;
+  --gray-50: #F8FAFC;
+  --gray-100: #F1F5F9;
+  --gray-200: #E2E8F0;
+  --gray-300: #CBD5E1;
+  --gray-400: #94A3B8;
+  --gray-500: #64748B;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1E293B;
+  --gray-900: #0F172A;
+  --accent-blue: #2563EB;
+  --accent-cyan: #0891B2;
+  --accent-teal: #0D9488;
+  --accent-green: #16A34A;
+  --accent-amber: #D97706;
+  --accent-orange: #EA580C;
+  --accent-red: #DC2626;
+  --accent-purple: #7C3AED;
+  --text-primary: #1E293B;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --border: rgba(0, 0, 0, 0.08);
+  --shadow: rgba(0, 0, 0, 0.05);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--gray-50);
+  color: var(--text-primary);
+}
+
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+header {
+  position: relative; z-index: 10;
+  padding: 40px 60px 30px;
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: flex-end;
+  background: var(--white);
+}
+
+.logo { display: flex; flex-direction: column; gap: 4px; }
+.logo h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; color: var(--gray-900); }
+.logo h1 span { color: var(--accent-blue); }
+.logo p { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px; font-weight: 500; }
+.version { font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+nav {
+  position: relative; z-index: 10;
+  display: flex; gap: 4px; padding: 12px 60px;
+  border-bottom: 1px solid var(--border);
+  background: var(--white);
+  position: sticky; top: 0;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+
+nav a {
+  background: none; border: 1px solid transparent; color: var(--text-secondary);
+  padding: 8px 18px; border-radius: 6px; font-family: 'DM Sans'; font-size: 13px;
+  font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none;
+}
+nav a:hover { color: var(--text-primary); background: var(--gray-100); }
+nav a.active {
+  color: var(--accent-blue); border-color: var(--accent-blue);
+  background: rgba(37,99,235,0.06);
+}
+
+main { position: relative; z-index: 5; padding: 40px 60px; }
+
+.section-title {
+  font-size: 28px; font-weight: 700; margin-bottom: 8px; color: var(--gray-900);
+}
+.section-subtitle {
+  font-size: 15px; color: var(--text-muted); margin-bottom: 32px; max-width: 900px; line-height: 1.7;
+}
+
+.legend {
+  display: flex; gap: 24px; margin-bottom: 32px; flex-wrap: wrap;
+  padding: 16px 20px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); }
+.legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+
+.arch-container {
+  display: grid; grid-template-columns: 1fr; gap: 20px;
+}
+
+.arch-layer {
+  border: 1px solid var(--border); border-radius: 16px;
+  padding: 28px; position: relative;
+  background: var(--white);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.arch-layer::before {
+  content: attr(data-layer);
+  position: absolute; top: -12px; left: 24px;
+  background: var(--gray-50); padding: 2px 14px;
+  font-size: 11px; text-transform: uppercase; letter-spacing: 2px;
+  color: var(--accent-blue); font-weight: 600;
+  border-radius: 4px;
+}
+
+.layer-nodes {
+  display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;
+}
+
+.node {
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 18px 24px; min-width: 170px; text-align: center;
+  cursor: pointer; transition: all 0.3s; position: relative;
+  background: var(--gray-50);
+}
+.node:hover { transform: translateY(-3px); box-shadow: 0 8px 24px var(--shadow); }
+.node .icon { font-size: 28px; margin-bottom: 10px; }
+.node .name { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+.node .role { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.node .status {
+  position: absolute; top: 10px; right: 10px; width: 10px; height: 10px;
+  border-radius: 50%;
+}
+.status-live { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+.status-config { background: var(--accent-amber); box-shadow: 0 0 8px var(--accent-amber); }
+.status-planned { background: var(--accent-blue); box-shadow: 0 0 8px var(--accent-blue); }
+.status-retire { background: var(--accent-red); box-shadow: 0 0 8px var(--accent-red); }
+
+.node[data-color="blue"] { border-color: rgba(37,99,235,0.3); }
+.node[data-color="blue"]:hover { border-color: var(--accent-blue); box-shadow: 0 8px 24px rgba(37,99,235,0.15); }
+.node[data-color="cyan"] { border-color: rgba(8,145,178,0.3); }
+.node[data-color="cyan"]:hover { border-color: var(--accent-cyan); box-shadow: 0 8px 24px rgba(8,145,178,0.15); }
+.node[data-color="green"] { border-color: rgba(22,163,74,0.3); }
+.node[data-color="green"]:hover { border-color: var(--accent-green); box-shadow: 0 8px 24px rgba(22,163,74,0.15); }
+.node[data-color="purple"] { border-color: rgba(124,58,237,0.3); }
+.node[data-color="purple"]:hover { border-color: var(--accent-purple); box-shadow: 0 8px 24px rgba(124,58,237,0.15); }
+.node[data-color="amber"] { border-color: rgba(217,119,6,0.3); }
+.node[data-color="amber"]:hover { border-color: var(--accent-amber); box-shadow: 0 8px 24px rgba(217,119,6,0.15); }
+.node[data-color="red"] { border-color: rgba(220,38,38,0.3); }
+.node[data-color="red"]:hover { border-color: var(--accent-red); box-shadow: 0 8px 24px rgba(220,38,38,0.15); }
+.node[data-color="teal"] { border-color: rgba(13,148,136,0.3); }
+.node[data-color="teal"]:hover { border-color: var(--accent-teal); box-shadow: 0 8px 24px rgba(13,148,136,0.15); }
+.node[data-color="orange"] { border-color: rgba(234,88,12,0.3); }
+.node[data-color="orange"]:hover { border-color: var(--accent-orange); box-shadow: 0 8px 24px rgba(234,88,12,0.15); }
+
+.flow-arrows {
+  display: flex; justify-content: center; padding: 6px 0;
+  color: var(--gray-400); font-size: 18px; letter-spacing: 12px;
+}
+
+@media (max-width: 1200px) {
+  header, nav, main { padding-left: 30px; padding-right: 30px; }
+}
+@media (max-width: 768px) {
+  nav { overflow-x: auto; }
+  .node { min-width: 140px; padding: 14px 16px; }
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<header>
+  <div class="logo">
+    <h1>RS<span>&</span>Co.</h1>
+    <p>Enterprise Architecture</p>
+  </div>
+  <div class="version">v1.1 | February 5, 2026 | Confidential</div>
+</header>
+
+<nav>
+  <a href="00-index.html">Home</a>
+  <a href="01-system-architecture.html" class="active">System Architecture</a>
+  <a href="02-agentic-staff.html">Agentic Staff</a>
+  <a href="03-data-flows.html">Data Flows</a>
+  <a href="04-executive-dashboard.html">Executive Dashboard</a>
+  <a href="05-operating-model.html">Operating Model</a>
+  <a href="06-decommission-plan.html">Decommission Plan</a>
+</nav>
+
+<main>
+  <div class="section-title">Enterprise System Architecture</div>
+  <div class="section-subtitle">Seven-layer technology stack forming a unified operating environment. Wix CMS as the system of record, Microsoft 365 as the enterprise backbone, GitHub/VS Code as the development layer, and Claude + OpenAI as the intelligence tier.</div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent-green)"></div> Live / Connected</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent-amber)"></div> Configuring</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent-blue)"></div> Planned</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent-red)"></div> Retiring</div>
+  </div>
+
+  <div class="arch-container">
+
+    <div class="arch-layer" data-layer="Layer 1 — Executive Command Center">
+      <div class="layer-nodes">
+        <div class="node" data-color="blue"><div class="status status-planned"></div><div class="icon">🎯</div><div class="name">RS&Co. Executive Dashboard</div><div class="role">Unified Command Center</div></div>
+        <div class="node" data-color="blue"><div class="status status-config"></div><div class="icon">📊</div><div class="name">Power BI</div><div class="role">Analytics & Reporting</div></div>
+        <div class="node" data-color="cyan"><div class="status status-config"></div><div class="icon">🤖</div><div class="name">Copilot Studio</div><div class="role">AI Agent Hub</div></div>
+      </div>
+    </div>
+
+    <div class="flow-arrows">↕ ↕ ↕</div>
+
+    <div class="arch-layer" data-layer="Layer 2 — AI Intelligence Tier">
+      <div class="layer-nodes">
+        <div class="node" data-color="purple"><div class="status status-live"></div><div class="icon">🧠</div><div class="name">Claude / Anthropic</div><div class="role">Strategy + Architecture</div></div>
+        <div class="node" data-color="purple"><div class="status status-live"></div><div class="icon">⚡</div><div class="name">Claude Code</div><div class="role">Agentic Development</div></div>
+        <div class="node" data-color="green"><div class="status status-live"></div><div class="icon">🔮</div><div class="name">OpenAI / GPT</div><div class="role">Content + Analysis</div></div>
+        <div class="node" data-color="green"><div class="status status-config"></div><div class="icon">💻</div><div class="name">Codex / CLI</div><div class="role">Code Generation</div></div>
+      </div>
+    </div>
+
+    <div class="flow-arrows">↕ ↕ ↕</div>
+
+    <div class="arch-layer" data-layer="Layer 3 — Workflow Orchestration">
+      <div class="layer-nodes">
+        <div class="node" data-color="blue"><div class="status status-config"></div><div class="icon">⚙️</div><div class="name">Power Automate</div><div class="role">Workflow Engine</div></div>
+        <div class="node" data-color="teal"><div class="status status-live"></div><div class="icon">🔌</div><div class="name">MCP Servers</div><div class="role">Wix + Tool Connectors</div></div>
+        <div class="node" data-color="cyan"><div class="status status-live"></div><div class="icon">🔄</div><div class="name">Azure DevOps</div><div class="role">CI/CD Pipelines</div></div>
+        <div class="node" data-color="amber"><div class="status status-config"></div><div class="icon">📧</div><div class="name">Wix Automations</div><div class="role">CRM + Email Triggers</div></div>
+      </div>
+    </div>
+
+    <div class="flow-arrows">↕ ↕ ↕</div>
+
+    <div class="arch-layer" data-layer="Layer 4 — Development & Code">
+      <div class="layer-nodes">
+        <div class="node" data-color="cyan"><div class="status status-live"></div><div class="icon">📝</div><div class="name">VS Code</div><div class="role">IDE + Extensions</div></div>
+        <div class="node" data-color="teal"><div class="status status-live"></div><div class="icon">🐙</div><div class="name">GitHub</div><div class="role">RS-Co.Enterprise Repo</div></div>
+        <div class="node" data-color="amber"><div class="status status-config"></div><div class="icon">🔧</div><div class="name">Wix Velo</div><div class="role">Backend Modules (JSW)</div></div>
+      </div>
+    </div>
+
+    <div class="flow-arrows">↕ ↕ ↕</div>
+
+    <div class="arch-layer" data-layer="Layer 5 — Data Layer (System of Record)">
+      <div class="layer-nodes">
+        <div class="node" data-color="amber"><div class="status status-live"></div><div class="icon">🗄️</div><div class="name">Wix CMS</div><div class="role">Deal Room (6 Collections)</div></div>
+        <div class="node" data-color="blue"><div class="status status-live"></div><div class="icon">📁</div><div class="name">SharePoint</div><div class="role">RS Enterprise (45GB)</div></div>
+        <div class="node" data-color="blue"><div class="status status-config"></div><div class="icon">💰</div><div class="name">Business Central</div><div class="role">Financials + Capital</div></div>
+        <div class="node" data-color="blue"><div class="status status-config"></div><div class="icon">👥</div><div class="name">Dynamics 365 CRM</div><div class="role">Contacts + Pipeline</div></div>
+      </div>
+    </div>
+
+    <div class="flow-arrows">↕ ↕ ↕</div>
+
+    <div class="arch-layer" data-layer="Layer 6 — Client-Facing Interfaces">
+      <div class="layer-nodes">
+        <div class="node" data-color="amber"><div class="status status-live"></div><div class="icon">🌐</div><div class="name">Wix Sites</div><div class="role">RS&Co. + AREAops</div></div>
+        <div class="node" data-color="blue"><div class="status status-config"></div><div class="icon">💬</div><div class="name">Teams</div><div class="role">Internal Comms + Agents</div></div>
+        <div class="node" data-color="blue"><div class="status status-config"></div><div class="icon">📨</div><div class="name">Outlook</div><div class="role">Client Comms + Automations</div></div>
+        <div class="node" data-color="amber"><div class="status status-config"></div><div class="icon">📱</div><div class="name">Wix Members Portal</div><div class="role">Investor Deal Room Access</div></div>
+      </div>
+    </div>
+
+    <div class="flow-arrows">↕ ↕ ↕</div>
+
+    <div class="arch-layer" data-layer="Layer 7 — Legacy / Decommission Queue" style="border-color: rgba(220,38,38,0.2);">
+      <div class="layer-nodes">
+        <div class="node" data-color="red"><div class="status status-retire"></div><div class="icon">📋</div><div class="name">Smartsheet</div><div class="role">→ SharePoint + Planner</div></div>
+        <div class="node" data-color="red"><div class="status status-retire"></div><div class="icon">🎨</div><div class="name">Canva</div><div class="role">→ Designer + SharePoint</div></div>
+        <div class="node" data-color="red"><div class="status status-retire"></div><div class="icon">📄</div><div class="name">Typeset</div><div class="role">→ Claude + Word</div></div>
+        <div class="node" data-color="red"><div class="status status-retire"></div><div class="icon">📢</div><div class="name">MarketingBlocks</div><div class="role">→ Copilot + Wix</div></div>
+        <div class="node" data-color="red"><div class="status status-retire"></div><div class="icon">🏢</div><div class="name">CREOP</div><div class="role">→ Wix Deal Room</div></div>
+        <div class="node" data-color="red"><div class="status status-retire"></div><div class="icon">📈</div><div class="name">Pipedrive</div><div class="role">→ Dynamics 365 CRM</div></div>
+        <div class="node" data-color="orange"><div class="status status-config"></div><div class="icon">🎬</div><div class="name">Adobe</div><div class="role">Evaluate: Keep CC / Retire</div></div>
+        <div class="node" data-color="orange"><div class="status status-config"></div><div class="icon">💜</div><div class="name">Loveable</div><div class="role">Evaluate: Archive Prototypes</div></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+</body>
+</html>
