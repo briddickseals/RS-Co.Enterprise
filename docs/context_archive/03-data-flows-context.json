@@ -1,0 +1,142 @@
+{
+  "metadata": {
+    "extraction_date": "2026-02-16",
+    "schema_version": "1.0.0",
+    "source_type": "architecture_doc",
+    "processor": "Claude Code (Chief Engineering Agent)",
+    "confidence_score": 0.96
+  },
+  "source_document": {
+    "title": "Data Flow Architecture",
+    "path": "docs/architecture-pages/03-data-flows.html",
+    "version": "v1.1",
+    "date": "2026-02-05",
+    "classification": "confidential"
+  },
+  "extracted_entities": {
+    "systems": [
+      { "name": "Wix CMS", "status": "live", "platform": "Wix", "function": "Deal Data System of Record", "system_of_record_for": "Deal Data" },
+      { "name": "SharePoint", "status": "live", "platform": "Microsoft", "function": "Document System of Record", "system_of_record_for": "Documents" },
+      { "name": "Business Central", "status": "configuring", "platform": "Microsoft", "function": "Financial System of Record", "system_of_record_for": "Financials" },
+      { "name": "GitHub", "status": "live", "platform": "GitHub", "function": "Code System of Record", "system_of_record_for": "Code" },
+      { "name": "Power Automate", "status": "configuring", "platform": "Microsoft", "function": "Event-driven workflow engine" },
+      { "name": "MCP Servers", "status": "live", "platform": "MCP Protocol", "function": "AI-to-platform connector" }
+    ],
+    "agents": [],
+    "people": [],
+    "brands": [],
+    "data_flows": [
+      {
+        "name": "Deal Lifecycle Flow",
+        "system_of_record": "Wix CMS",
+        "trigger": "New deal submission via Copilot Studio agent or direct CMS entry",
+        "path": "Deal Intake Agent → Wix CMS (DealRoomDeals) → Power Automate → SharePoint + Teams + CRM",
+        "direction": "unidirectional"
+      },
+      {
+        "name": "NDA Execution Flow",
+        "system_of_record": "Wix CMS",
+        "trigger": "Investor submits NDA via Wix Members portal",
+        "path": "Wix Members Portal → Wix CMS (DealRoomNDAs) → Power Automate → Teams + Outlook + Dynamics 365",
+        "direction": "unidirectional"
+      },
+      {
+        "name": "Document Management Flow",
+        "system_of_record": "SharePoint",
+        "trigger": "Document upload via Wix or SharePoint",
+        "path": "Wix Media Manager ↔ SharePoint /Deals/{slug}/ → Power BI (Doc Analytics)",
+        "direction": "bidirectional"
+      },
+      {
+        "name": "Financial Tracking Flow",
+        "system_of_record": "Business Central",
+        "trigger": "Deal status changes to 'In Escrow' in Wix CMS",
+        "path": "Wix CMS (Deal → In Escrow) → Power Automate → Business Central (Projects) → Power BI (Portfolio)",
+        "direction": "unidirectional"
+      },
+      {
+        "name": "Development & Deployment Flow",
+        "system_of_record": "GitHub",
+        "trigger": "Code commit to GitHub repository",
+        "path": "Claude Code (VS Code) → GitHub (RS-Co.Enterprise) → Azure DevOps (CI/CD) → Wix Velo + SharePoint",
+        "direction": "unidirectional"
+      },
+      {
+        "name": "AI Agent Communication Flow — Anthropic Path",
+        "system_of_record": "Wix CMS",
+        "trigger": "Agent task assignment or MCP request",
+        "path": "Claude (Strategy) ↔ MCP Servers ↔ Wix CMS + Sites",
+        "direction": "bidirectional"
+      },
+      {
+        "name": "AI Agent Communication Flow — Microsoft Path",
+        "system_of_record": "Dynamics 365",
+        "trigger": "Client interaction or internal query",
+        "path": "OpenAI/Copilot ↔ Copilot Studio ↔ Teams + Dynamics 365",
+        "direction": "bidirectional"
+      }
+    ]
+  },
+  "context_blocks": [
+    {
+      "domain": "data",
+      "category": "flow_architecture",
+      "content": "7 primary data flows across enterprise: Deal Lifecycle (Wix CMS → SharePoint/Teams/CRM), NDA Execution (Members Portal → CMS → Teams/Outlook/D365), Document Management (Wix ↔ SharePoint bidirectional), Financial Tracking (CMS → Business Central → Power BI), Development (GitHub → Azure DevOps → Wix Velo/SharePoint), AI Anthropic Path (Claude ↔ MCP ↔ Wix), AI Microsoft Path (Copilot ↔ Teams/D365). All flows are event-driven via Power Automate or MCP connections.",
+      "actionable": false,
+      "dependencies": ["Power Automate", "MCP Servers"],
+      "status": "active"
+    },
+    {
+      "domain": "data",
+      "category": "deal_pipeline_stages",
+      "content": "Deal pipeline progression: Draft → Active → Under LOI → In Escrow → Closed. Financial tracking triggers automatically when deal enters 'In Escrow' status.",
+      "actionable": false,
+      "dependencies": ["Wix CMS", "Business Central"],
+      "status": "active"
+    },
+    {
+      "domain": "data",
+      "category": "key_metrics",
+      "content": "Key data points tracked across all flows: Deal progression status, investor engagement metrics, document access and downloads, financial projections and actuals, workflow completion rates, API call volumes and latency, agent utilization metrics.",
+      "actionable": false,
+      "dependencies": ["Power BI"],
+      "status": "planned"
+    },
+    {
+      "domain": "engineering",
+      "category": "ci_cd",
+      "content": "Development flow: Claude Code authors in VS Code → commits to GitHub RS-Co.Enterprise repo → Azure DevOps CI/CD pipeline runs tests and builds → deploys to Wix Velo (backend modules) or SharePoint (scripts/templates). Full version control with rollback capability.",
+      "actionable": true,
+      "dependencies": ["GitHub", "Azure DevOps", "Wix Velo", "SharePoint"],
+      "status": "active"
+    }
+  ],
+  "decisions": [
+    {
+      "decision": "Event-driven architecture for all data flows using Power Automate and MCP Servers",
+      "rationale": "Ensures real-time synchronization without manual intervention; clear trigger-action chains",
+      "impact": "All cross-system data movement is automated and auditable",
+      "date": "2026-02-05"
+    },
+    {
+      "decision": "Dual AI communication paths: Anthropic via MCP, Microsoft via Copilot Studio",
+      "rationale": "Leverage each AI platform's native integration strengths while maintaining system access for both",
+      "impact": "AI agents can read/write to all enterprise systems with appropriate access controls",
+      "date": "2026-02-05"
+    },
+    {
+      "decision": "Bidirectional sync only for document management (Wix ↔ SharePoint); all other flows unidirectional",
+      "rationale": "Documents need to be available from both platforms; deal/financial data has clear ownership direction",
+      "impact": "Minimizes sync conflicts; SharePoint remains version control authority",
+      "date": "2026-02-05"
+    }
+  ],
+  "action_items": [
+    { "action": "Implement Deal Lifecycle Power Automate flow", "owner": "Chief Engineering Agent", "priority": "critical", "deadline": "Phase 3", "status": "pending" },
+    { "action": "Implement NDA Execution Power Automate flow", "owner": "Chief Engineering Agent", "priority": "critical", "deadline": "Phase 3", "status": "pending" },
+    { "action": "Configure Wix ↔ SharePoint bidirectional document sync", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Phase 3", "status": "pending" },
+    { "action": "Set up Business Central project auto-creation on escrow trigger", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Phase 3", "status": "pending" },
+    { "action": "Configure Azure DevOps CI/CD pipeline for RS-Co.Enterprise", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Phase 2", "status": "pending" },
+    { "action": "Deploy MCP Servers for Wix CMS ↔ Claude connectivity", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Phase 2", "status": "pending" }
+  ]
+}

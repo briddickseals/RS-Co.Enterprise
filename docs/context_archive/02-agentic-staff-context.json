@@ -1,0 +1,207 @@
+{
+  "metadata": {
+    "extraction_date": "2026-02-16",
+    "schema_version": "1.0.0",
+    "source_type": "architecture_doc",
+    "processor": "Claude Code (Chief Engineering Agent)",
+    "confidence_score": 0.97
+  },
+  "source_document": {
+    "title": "Agentic Staff — Role-Based Operating Model",
+    "path": "docs/architecture-pages/02-agentic-staff.html",
+    "version": "v1.1",
+    "date": "2026-02-05",
+    "classification": "confidential"
+  },
+  "extracted_entities": {
+    "systems": [],
+    "agents": [
+      {
+        "name": "Chief Strategy Agent",
+        "platform": "Anthropic (Claude / claude.ai)",
+        "role": "Strategy + Architecture",
+        "tier": "strategic",
+        "responsibilities": [
+          "Enterprise architecture design and planning",
+          "Playbook and framework generation",
+          "Strategic document authoring (DOCX, PDF)",
+          "Cross-platform integration specifications",
+          "Operating model and organizational design"
+        ]
+      },
+      {
+        "name": "Chief Engineering Agent",
+        "platform": "Anthropic (Claude Code / VS Code)",
+        "role": "Engineering + Deployment",
+        "tier": "strategic",
+        "responsibilities": [
+          "Codebase development and deployment",
+          "Azure DevOps pipeline configuration",
+          "SharePoint/M365 administration scripts",
+          "GitHub repo management and CI/CD",
+          "Wix Velo backend module deployment"
+        ]
+      },
+      {
+        "name": "Content & Analysis Agent",
+        "platform": "OpenAI GPT-4",
+        "role": "Content + Analysis",
+        "tier": "content",
+        "responsibilities": [
+          "Marketing copy and campaign content",
+          "Deal document summarization and extraction",
+          "Financial model analysis and commentary",
+          "Investor memo and pitch deck drafting",
+          "SEO content for Wix sites"
+        ]
+      },
+      {
+        "name": "Rapid Prototyping Agent",
+        "platform": "OpenAI Codex / CLI",
+        "role": "Code Generation",
+        "tier": "content",
+        "responsibilities": [
+          "Quick script generation (Python, JS, PowerShell)",
+          "Data transformation and ETL scripts",
+          "API connector prototypes",
+          "One-off automation scripts",
+          "Code review and refactoring support"
+        ]
+      },
+      {
+        "name": "Deal Intake Agent",
+        "platform": "Microsoft Copilot Studio",
+        "role": "CRM + Intake",
+        "tier": "operational",
+        "responsibilities": [
+          "Guided deal submission from sponsors/brokers",
+          "Property and financial data collection",
+          "Document upload routing to SharePoint",
+          "Draft deal record creation in Wix CMS",
+          "Teams notification to deal team"
+        ]
+      },
+      {
+        "name": "Investor Q&A Agent",
+        "platform": "Microsoft Copilot Studio",
+        "role": "Investor Relations",
+        "tier": "operational",
+        "responsibilities": [
+          "Answer deal-specific investor questions",
+          "NDA-gated document access links",
+          "Key date summaries (LOI, close, offers)",
+          "Route complex questions to broker",
+          "Entra ID authentication + access control"
+        ]
+      },
+      {
+        "name": "Escrow Status Agent",
+        "platform": "Microsoft Copilot Studio",
+        "role": "Transaction Management",
+        "tier": "operational",
+        "responsibilities": [
+          "Milestone status updates to deal parties",
+          "Contingency and due date tracking",
+          "Overdue item escalation alerts",
+          "Stakeholder-specific access views",
+          "Closing checklist progression"
+        ]
+      },
+      {
+        "name": "Internal Knowledge Agent",
+        "platform": "Microsoft Copilot Studio",
+        "role": "Knowledge Base",
+        "tier": "operational",
+        "responsibilities": [
+          "Internal team Q&A across all deal data",
+          "Process documentation retrieval",
+          "Contact and stakeholder lookup",
+          "SharePoint document search and summarize",
+          "Onboarding support for new team members"
+        ]
+      },
+      {
+        "name": "Workflow Orchestrator",
+        "platform": "Microsoft Power Automate",
+        "role": "Automation",
+        "tier": "integration",
+        "responsibilities": [
+          "NDA → Teams → CRM event chain",
+          "Document upload → SharePoint sync",
+          "Deal status → pipeline + financials update",
+          "Milestone due date → reminder automation",
+          "Cross-system error handling and retry"
+        ]
+      },
+      {
+        "name": "MCP Integration Agent",
+        "platform": "MCP Protocol (MCP Servers)",
+        "role": "Connectors",
+        "tier": "integration",
+        "responsibilities": [
+          "Wix CMS read/write via MCP",
+          "Real-time site management from Claude",
+          "AREAops site data operations",
+          "Tool-use bridging between AI and platforms",
+          "API abstraction for agent-to-system calls"
+        ]
+      }
+    ],
+    "people": [
+      { "name": "Brandon Riddick-Seals", "email": "brandon@riddickseals.com", "role": "Team Lead" },
+      { "name": "Bryson Riddick-Seals", "email": "bryson@riddickseals.com", "role": "Team Member" },
+      { "name": "Chana Austin", "email": "chana@riddickseals.com", "role": "Team Member" },
+      { "name": "LeRonne Riddick-Seals", "email": "leronne@riddickseals.com", "role": "Team Member" }
+    ],
+    "brands": ["RS&Co.", "AREAops", "Acumen", "Advisory", "Apeiron", "Apogee", "LUCY"],
+    "data_flows": []
+  },
+  "context_blocks": [
+    {
+      "domain": "operations",
+      "category": "agent_model",
+      "content": "10-agent operating model organized into 4 tiers: Strategic (Claude, Claude Code), Content (GPT-4, Codex), Operational (4 Copilot Studio agents), Integration (Power Automate, MCP Servers). Zero redundancy design ensures each agent has exclusive domain ownership with no overlapping responsibilities.",
+      "actionable": false,
+      "dependencies": [],
+      "status": "active"
+    },
+    {
+      "domain": "operations",
+      "category": "reporting_structure",
+      "content": "All agents report to Executive Dashboard as unified command layer. Hierarchy: Executive Dashboard → Strategic Tier (Claude, Claude Code, GPT) → Operational Tier (Deal Intake, Investor Q&A, Escrow Status, Internal KB) → Integration Tier (Power Automate, MCP Servers).",
+      "actionable": false,
+      "dependencies": ["Executive Dashboard", "Power BI"],
+      "status": "planned"
+    },
+    {
+      "domain": "governance",
+      "category": "deconfliction",
+      "content": "Agent Deconfliction Protocol: Claude.ai owns strategy/architecture, Claude Code owns engineering/deployment, OpenAI owns content/analysis, Copilot Studio owns client-facing interactions, Power Automate owns event-driven workflows. Escalation rule: when domain ownership is unclear, route to Chief Strategy Agent for resolution.",
+      "actionable": true,
+      "dependencies": [],
+      "status": "active"
+    }
+  ],
+  "decisions": [
+    {
+      "decision": "Adopt zero-redundancy agent operating model with 10 agents across 4 tiers",
+      "rationale": "Prevent duplicate work, ensure clear accountability, optimize AI spend across platforms",
+      "impact": "Every task has exactly one responsible agent; no ambiguity in routing",
+      "date": "2026-02-05"
+    },
+    {
+      "decision": "Anthropic (Claude) designated for strategic tier; OpenAI for content tier; Microsoft for operational tier",
+      "rationale": "Leverage each platform's strengths: Claude for reasoning/architecture, GPT for content generation, Copilot for M365-integrated client interactions",
+      "impact": "Platform-aligned agent roles maximize capability utilization",
+      "date": "2026-02-05"
+    }
+  ],
+  "action_items": [
+    { "action": "Deploy Deal Intake Agent in Copilot Studio", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Phase 3", "status": "pending" },
+    { "action": "Deploy Investor Q&A Agent in Copilot Studio", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Phase 3", "status": "pending" },
+    { "action": "Deploy Escrow Status Agent in Copilot Studio", "owner": "Chief Engineering Agent", "priority": "medium", "deadline": "Phase 3", "status": "pending" },
+    { "action": "Deploy Internal Knowledge Agent in Copilot Studio", "owner": "Chief Engineering Agent", "priority": "medium", "deadline": "Phase 3", "status": "pending" },
+    { "action": "Configure MCP Servers for Wix CMS read/write", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Phase 2-3", "status": "pending" },
+    { "action": "Set up Power Automate workflow chains", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Phase 2-3", "status": "pending" }
+  ]
+}

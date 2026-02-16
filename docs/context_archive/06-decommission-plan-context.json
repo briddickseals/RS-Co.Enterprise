@@ -1,0 +1,96 @@
+{
+  "metadata": {
+    "extraction_date": "2026-02-16",
+    "schema_version": "1.0.0",
+    "source_type": "architecture_doc",
+    "processor": "Claude Code (Chief Engineering Agent)",
+    "confidence_score": 0.97
+  },
+  "source_document": {
+    "title": "Legacy System Decommission Plan",
+    "path": "docs/architecture-pages/06-decommission-plan.html",
+    "version": "v1.1",
+    "date": "2026-02-05",
+    "classification": "confidential"
+  },
+  "extracted_entities": {
+    "systems": [
+      { "name": "Pipedrive", "status": "retiring", "platform": "Legacy", "function": "CRM & deal pipeline → Dynamics 365 CRM + Wix CMS" },
+      { "name": "CREOP", "status": "retiring", "platform": "Legacy", "function": "CRE deal room → Wix Deal Room (6 CMS collections)" },
+      { "name": "Smartsheet", "status": "retiring", "platform": "Legacy", "function": "Project tracking → SharePoint Lists + Planner + Power BI" },
+      { "name": "MarketingBlocks", "status": "retiring", "platform": "Legacy", "function": "AI marketing → OpenAI GPT + Copilot Studio + Wix Ascend" },
+      { "name": "Typeset", "status": "retiring", "platform": "Legacy", "function": "Document formatting → Claude + Microsoft Word" },
+      { "name": "Canva", "status": "retiring", "platform": "Legacy", "function": "Design & branding → Microsoft Designer + SharePoint" },
+      { "name": "Adobe CC", "status": "evaluating", "platform": "Legacy", "function": "Professional design & video — evaluate selective retention" },
+      { "name": "Loveable", "status": "evaluating", "platform": "Legacy", "function": "UI/UX prototyping → GitHub (code) + SharePoint (assets)" }
+    ],
+    "agents": [],
+    "people": [],
+    "brands": [],
+    "data_flows": []
+  },
+  "context_blocks": [
+    {
+      "domain": "decommission",
+      "category": "retirement_schedule",
+      "content": "8 legacy systems in decommission queue across 6-week schedule. Weeks 1-2: Typeset. Weeks 2-3: CREOP. Weeks 2-4: Smartsheet, Pipedrive. Weeks 3-4: MarketingBlocks, Loveable. Weeks 4-6: Canva. Weeks 5-6: Adobe CC (evaluation). Priority order: Pipedrive/Smartsheet/CREOP first, Adobe/Loveable evaluation extends later.",
+      "actionable": true,
+      "dependencies": ["Dynamics 365", "SharePoint", "Wix CMS"],
+      "status": "planned"
+    },
+    {
+      "domain": "decommission",
+      "category": "data_migration",
+      "content": "Data actions per system: Pipedrive — export contacts, deals, activities → import to Dynamics 365. CREOP — export deal data, documents, NDA records → Wix Deal Room. Smartsheet — export all sheets as XLSX → import to SharePoint. MarketingBlocks — export templates, replace with GPT agents. Typeset — export all documents to SharePoint. Canva — export brand assets to SharePoint. Adobe CC — audit licenses, archive project files. Loveable — export code to GitHub, archive design files to SharePoint.",
+      "actionable": true,
+      "dependencies": ["Dynamics 365", "Wix CMS", "SharePoint", "GitHub"],
+      "status": "planned"
+    },
+    {
+      "domain": "decommission",
+      "category": "pre_decommission_checklist",
+      "content": "3-phase decommission checklist: Phase 1 (Data Export) — export all user data, transaction history, documents, config settings, verify completeness. Phase 2 (Import & Validation) — import to target, map fields, validate record counts, test workflows, UAT. Phase 3 (Retirement) — notify users, update documentation, cancel subscription, archive final backup, remove from password manager.",
+      "actionable": true,
+      "dependencies": [],
+      "status": "planned"
+    },
+    {
+      "domain": "finance",
+      "category": "cost_savings",
+      "content": "Estimated annual savings from consolidation: $4,000-$8,000+/year from retiring Pipedrive, CREOP, Smartsheet, MarketingBlocks, Typeset, Canva Pro, and partial Adobe reduction. Additional benefits: reduced complexity, fewer login credentials, unified audit trail, single support channel.",
+      "actionable": false,
+      "dependencies": [],
+      "status": "planned"
+    }
+  ],
+  "decisions": [
+    {
+      "decision": "Retire 6 legacy systems, evaluate 2 more over 6-week staged schedule",
+      "rationale": "Eliminate redundancy, consolidate into core Microsoft + Wix + AI stack",
+      "impact": "$4,000-8,000+ annual savings; reduced operational complexity",
+      "date": "2026-02-05"
+    },
+    {
+      "decision": "All data archived to SharePoint before any system retirement",
+      "rationale": "Ensure zero data loss during migration; SharePoint provides audit trail and version control",
+      "impact": "Every decommissioned system's data is preserved and accessible",
+      "date": "2026-02-05"
+    },
+    {
+      "decision": "Staged wave approach for decommission (not all-at-once)",
+      "rationale": "Minimize operational disruption; allow validation between waves",
+      "impact": "Team can adapt to changes incrementally",
+      "date": "2026-02-05"
+    }
+  ],
+  "action_items": [
+    { "action": "Export Typeset documents to SharePoint (Week 1-2)", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Week 2", "status": "pending" },
+    { "action": "Export CREOP deal data to Wix CMS (Week 2-3)", "owner": "Chief Engineering Agent", "priority": "critical", "deadline": "Week 3", "status": "pending" },
+    { "action": "Export Pipedrive contacts/deals to Dynamics 365 (Week 3-4)", "owner": "Chief Engineering Agent", "priority": "critical", "deadline": "Week 4", "status": "pending" },
+    { "action": "Export Smartsheet data to SharePoint Lists (Week 2-4)", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Week 4", "status": "pending" },
+    { "action": "Export MarketingBlocks templates and replace with GPT agents (Week 3-4)", "owner": "Content & Analysis Agent", "priority": "medium", "deadline": "Week 4", "status": "pending" },
+    { "action": "Export Canva brand assets to SharePoint (Week 4-6)", "owner": "Chief Engineering Agent", "priority": "medium", "deadline": "Week 6", "status": "pending" },
+    { "action": "Audit Adobe CC licenses and evaluate retention (Week 5-6)", "owner": "Chief Strategy Agent", "priority": "low", "deadline": "Week 6", "status": "pending" },
+    { "action": "Export Loveable code to GitHub, archive designs (Week 3-4)", "owner": "Chief Engineering Agent", "priority": "medium", "deadline": "Week 4", "status": "pending" }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "metadata": {
+    "extraction_date": "2026-02-16",
+    "schema_version": "1.0.0",
+    "source_type": "architecture_doc",
+    "processor": "Claude Code (Chief Engineering Agent)",
+    "confidence_score": 0.96
+  },
+  "source_document": {
+    "title": "Enterprise Operating Model",
+    "path": "docs/architecture-pages/05-operating-model.html",
+    "version": "v1.1",
+    "date": "2026-02-05",
+    "classification": "confidential"
+  },
+  "extracted_entities": {
+    "systems": [],
+    "agents": [],
+    "people": [],
+    "brands": ["RS&Co.", "Acumen", "Advisory", "Apeiron", "Apogee", "AREAops", "LUCY"],
+    "data_flows": []
+  },
+  "context_blocks": [
+    {
+      "domain": "governance",
+      "category": "single_source_of_truth",
+      "content": "Governance Principle 1: Every data entity has exactly one system of record. Wix CMS owns deal data, SharePoint owns documents, Business Central owns financials, Dynamics 365 owns contacts/pipeline. All other systems consume via Power Automate or API — never duplicate. Derived data is calculated on read, not stored redundantly. Golden Rule: 'If creating new data, ensure it is in the correct system of record from the start.'",
+      "actionable": true,
+      "dependencies": ["Wix CMS", "SharePoint", "Business Central", "Dynamics 365"],
+      "status": "active"
+    },
+    {
+      "domain": "governance",
+      "category": "file_taxonomy",
+      "content": "Governance Principle 2: Uniform naming convention [Entity]-[Category]-[Description]-[Version].[ext]. SharePoint has 6 top-level categories: Executive, Corporate, Brands, Marketing, People, Projects, Archive. Deal documents follow /Deals/{dealSlug}/{category}/ structure. Rules: no loose files at root; no personal naming conventions. Project folders numbered sequentially (001, 002, etc.) with subcategories (01-Legal, 02-Financial, 03-Due-Diligence, 04-Marketing).",
+      "actionable": true,
+      "dependencies": ["SharePoint"],
+      "status": "active"
+    },
+    {
+      "domain": "governance",
+      "category": "agent_deconfliction",
+      "content": "Governance Principle 3: Zero Redundancy — each agent has primary domain and platform. Claude.ai: strategy/architecture, Claude Code: engineering/deployment, OpenAI: content/analysis, Copilot Studio: client-facing, Power Automate: event-driven workflows. No two agents perform same function on same platform. Escalation: when in doubt, route to Chief Strategy Agent.",
+      "actionable": true,
+      "dependencies": [],
+      "status": "active"
+    },
+    {
+      "domain": "governance",
+      "category": "vertical_integration",
+      "content": "Governance Principle 4: 7 brand verticals (Enterprise, Acumen, Advisory, Apeiron, Apogee, AREAops, LUCY) share same infrastructure stack. Each vertical has own Wix CMS collections, SharePoint subfolder, and CRM pipeline. Shared services: authentication, payment processing, email automations, analytics. Design principle: 'Build once, deploy across all brands.'",
+      "actionable": true,
+      "dependencies": ["Wix CMS", "SharePoint", "Dynamics 365"],
+      "status": "active"
+    },
+    {
+      "domain": "security",
+      "category": "access_control",
+      "content": "Governance Principle 5: Role-Based Access Control with 4 tiers — Admin (full control), Escrow (deal-party transaction room access), NDA (investor-level document access), Public (anonymous site visitors). Microsoft services use Entra ID; client-facing portals use Wix Members. Consistent enforcement across Wix Members, SharePoint groups, Dynamics 365 security roles, and Copilot Studio agent access checks.",
+      "actionable": true,
+      "dependencies": ["Entra ID", "Wix Members"],
+      "status": "active"
+    },
+    {
+      "domain": "operations",
+      "category": "continuous_improvement",
+      "content": "Governance Principle 6: Weekly operational rhythm — Monday: Power BI dashboard review + pipeline health check; Wednesday: agent performance review + workflow error audit; Friday: backlog grooming in Azure DevOps + sprint planning. Monthly: architecture review, decommission tracking, vendor cost analysis. Quarterly: strategic alignment review, roadmap update, stakeholder presentation.",
+      "actionable": true,
+      "dependencies": ["Power BI", "Azure DevOps"],
+      "status": "active"
+    }
+  ],
+  "decisions": [
+    {
+      "decision": "Single Source of Truth architecture — no data duplication",
+      "rationale": "Prevents data drift, conflicting records, and wasted storage; ensures one authoritative answer for every query",
+      "impact": "All integrations must respect system-of-record boundaries",
+      "date": "2026-02-05"
+    },
+    {
+      "decision": "Build-once, deploy-across-all-brands vertical integration model",
+      "rationale": "7 verticals sharing infrastructure reduces development cost and ensures consistency",
+      "impact": "All new features benefit all brands simultaneously",
+      "date": "2026-02-05"
+    },
+    {
+      "decision": "4-tier RBAC security model (Admin, Escrow, NDA, Public)",
+      "rationale": "Matches real estate transaction lifecycle access patterns",
+      "impact": "Consistent access control across all platforms",
+      "date": "2026-02-05"
+    }
+  ],
+  "action_items": [
+    { "action": "Implement SharePoint document taxonomy structure", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Phase 2", "status": "pending" },
+    { "action": "Configure Entra ID security groups for 4-tier RBAC", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Phase 2", "status": "pending" },
+    { "action": "Set up Wix Members access control aligned with RBAC tiers", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Phase 2-3", "status": "pending" },
+    { "action": "Establish weekly operational cadence (Mon/Wed/Fri rhythm)", "owner": "Chief Strategy Agent", "priority": "medium", "deadline": "Phase 1", "status": "pending" },
+    { "action": "Create Power BI agent performance monitoring dashboard", "owner": "Chief Engineering Agent", "priority": "medium", "deadline": "Phase 3", "status": "pending" }
+  ]
+}

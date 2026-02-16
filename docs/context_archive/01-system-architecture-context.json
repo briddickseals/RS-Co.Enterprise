@@ -1,0 +1,109 @@
+{
+  "metadata": {
+    "extraction_date": "2026-02-16",
+    "schema_version": "1.0.0",
+    "source_type": "architecture_doc",
+    "processor": "Claude Code (Chief Engineering Agent)",
+    "confidence_score": 0.95
+  },
+  "source_document": {
+    "title": "Enterprise System Architecture",
+    "path": "docs/architecture-pages/01-system-architecture.html",
+    "version": "v1.1",
+    "date": "2026-02-05",
+    "classification": "confidential"
+  },
+  "extracted_entities": {
+    "systems": [
+      { "name": "RS&Co. Executive Dashboard", "status": "planned", "platform": "Power BI", "function": "Unified Command Center" },
+      { "name": "Power BI", "status": "configuring", "platform": "Microsoft", "function": "Analytics & Reporting" },
+      { "name": "Copilot Studio", "status": "configuring", "platform": "Microsoft", "function": "AI Agent Hub" },
+      { "name": "Claude / Anthropic", "status": "live", "platform": "Anthropic", "function": "Strategy + Architecture" },
+      { "name": "Claude Code", "status": "live", "platform": "Anthropic", "function": "Agentic Development" },
+      { "name": "OpenAI / GPT", "status": "live", "platform": "OpenAI", "function": "Content + Analysis" },
+      { "name": "Codex / CLI", "status": "configuring", "platform": "OpenAI", "function": "Code Generation" },
+      { "name": "Power Automate", "status": "configuring", "platform": "Microsoft", "function": "Workflow Engine" },
+      { "name": "MCP Servers", "status": "live", "platform": "MCP Protocol", "function": "Wix + Tool Connectors" },
+      { "name": "Azure DevOps", "status": "live", "platform": "Microsoft", "function": "CI/CD Pipelines" },
+      { "name": "Wix Automations", "status": "configuring", "platform": "Wix", "function": "CRM + Email Triggers" },
+      { "name": "VS Code", "status": "live", "platform": "Microsoft", "function": "IDE + Extensions" },
+      { "name": "GitHub", "status": "live", "platform": "GitHub", "function": "RS-Co.Enterprise Repo" },
+      { "name": "Wix Velo", "status": "configuring", "platform": "Wix", "function": "Backend Modules (JSW)" },
+      { "name": "Wix CMS", "status": "live", "platform": "Wix", "function": "Deal Room (6 Collections)", "system_of_record_for": "Deal Data" },
+      { "name": "SharePoint", "status": "live", "platform": "Microsoft", "function": "RS Enterprise (45GB)", "system_of_record_for": "Documents" },
+      { "name": "Business Central", "status": "configuring", "platform": "Microsoft", "function": "Financials + Capital", "system_of_record_for": "Financials" },
+      { "name": "Dynamics 365 CRM", "status": "configuring", "platform": "Microsoft", "function": "Contacts + Pipeline", "system_of_record_for": "Contacts" },
+      { "name": "Wix Sites", "status": "live", "platform": "Wix", "function": "RS&Co. + AREAops" },
+      { "name": "Teams", "status": "configuring", "platform": "Microsoft", "function": "Internal Comms + Agents" },
+      { "name": "Outlook", "status": "configuring", "platform": "Microsoft", "function": "Client Comms + Automations" },
+      { "name": "Wix Members Portal", "status": "configuring", "platform": "Wix", "function": "Investor Deal Room Access" },
+      { "name": "Smartsheet", "status": "retiring", "platform": "Legacy", "function": "Project tracking → SharePoint + Planner" },
+      { "name": "Canva", "status": "retiring", "platform": "Legacy", "function": "Design → Designer + SharePoint" },
+      { "name": "Typeset", "status": "retiring", "platform": "Legacy", "function": "Formatting → Claude + Word" },
+      { "name": "MarketingBlocks", "status": "retiring", "platform": "Legacy", "function": "AI marketing → Copilot + Wix" },
+      { "name": "CREOP", "status": "retiring", "platform": "Legacy", "function": "Deal room → Wix Deal Room" },
+      { "name": "Pipedrive", "status": "retiring", "platform": "Legacy", "function": "CRM → Dynamics 365" },
+      { "name": "Adobe CC", "status": "evaluating", "platform": "Legacy", "function": "Professional design & video" },
+      { "name": "Loveable", "status": "evaluating", "platform": "Legacy", "function": "UI/UX prototyping" }
+    ],
+    "agents": [],
+    "people": [],
+    "brands": ["RS&Co.", "AREAops"],
+    "data_flows": []
+  },
+  "context_blocks": [
+    {
+      "domain": "architecture",
+      "category": "technology_stack",
+      "content": "Seven-layer technology stack: Layer 1 (Executive Command Center) - Power BI, Copilot Studio, Dashboard; Layer 2 (AI Intelligence) - Claude, Claude Code, OpenAI, Codex; Layer 3 (Workflow Orchestration) - Power Automate, MCP Servers, Azure DevOps, Wix Automations; Layer 4 (Development) - VS Code, GitHub, Wix Velo; Layer 5 (Data Layer) - Wix CMS, SharePoint, Business Central, Dynamics 365; Layer 6 (Client Interfaces) - Wix Sites, Teams, Outlook, Members Portal; Layer 7 (Legacy Queue) - 8 systems being retired or evaluated.",
+      "actionable": false,
+      "dependencies": [],
+      "status": "active"
+    },
+    {
+      "domain": "architecture",
+      "category": "system_status",
+      "content": "Current platform status: 10 systems LIVE (Claude, Claude Code, OpenAI, MCP Servers, Azure DevOps, VS Code, GitHub, Wix CMS, SharePoint, Wix Sites); 9 systems CONFIGURING (Power BI, Copilot Studio, Codex, Power Automate, Wix Automations, Wix Velo, Business Central, Dynamics 365, Teams, Outlook, Members Portal); 1 system PLANNED (Executive Dashboard); 6 systems RETIRING (Smartsheet, Canva, Typeset, MarketingBlocks, CREOP, Pipedrive); 2 systems EVALUATING (Adobe CC, Loveable).",
+      "actionable": true,
+      "dependencies": ["Power Automate", "Azure DevOps"],
+      "status": "in_progress"
+    },
+    {
+      "domain": "data",
+      "category": "systems_of_record",
+      "content": "Four designated systems of record: Wix CMS owns deal data (6 collections), SharePoint owns documents (45GB), Business Central owns financials, Dynamics 365 CRM owns contacts and pipeline. All other systems consume from these sources via Power Automate or API.",
+      "actionable": false,
+      "dependencies": ["Wix CMS", "SharePoint", "Business Central", "Dynamics 365"],
+      "status": "active"
+    }
+  ],
+  "decisions": [
+    {
+      "decision": "Seven-layer architecture model adopted for enterprise stack",
+      "rationale": "Clear separation of concerns with defined system-of-record for each data entity",
+      "impact": "All platform integrations follow layered model with unidirectional data ownership",
+      "date": "2026-02-05"
+    },
+    {
+      "decision": "Wix CMS designated as system of record for deal data",
+      "rationale": "6 existing CMS collections already house deal room data; absorbing CREOP functionality",
+      "impact": "All deal data flows originate from Wix CMS",
+      "date": "2026-02-05"
+    },
+    {
+      "decision": "8 legacy systems scheduled for retirement or evaluation",
+      "rationale": "Reduce complexity, eliminate redundancy, consolidate into core Microsoft + Wix + AI stack",
+      "impact": "Estimated $4,000-8,000+ annual savings; reduced credential management; unified audit trail",
+      "date": "2026-02-05"
+    }
+  ],
+  "action_items": [
+    { "action": "Complete Power BI configuration for Executive Dashboard", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Phase 2", "status": "pending" },
+    { "action": "Configure Power Automate workflow engine", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Phase 2", "status": "pending" },
+    { "action": "Deploy Wix Velo backend modules", "owner": "Chief Engineering Agent", "priority": "medium", "deadline": "Phase 3", "status": "pending" },
+    { "action": "Configure Business Central for financial tracking", "owner": "Chief Engineering Agent", "priority": "medium", "deadline": "Phase 2-3", "status": "pending" },
+    { "action": "Set up Dynamics 365 CRM pipeline", "owner": "Chief Engineering Agent", "priority": "medium", "deadline": "Phase 2-3", "status": "pending" },
+    { "action": "Evaluate Adobe CC retention vs. retirement", "owner": "Chief Strategy Agent", "priority": "low", "deadline": "Weeks 5-6", "status": "pending" },
+    { "action": "Evaluate Loveable archive vs. retirement", "owner": "Chief Strategy Agent", "priority": "low", "deadline": "Weeks 5-6", "status": "pending" }
+  ]
+}

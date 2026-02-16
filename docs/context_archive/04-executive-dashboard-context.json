@@ -1,0 +1,75 @@
+{
+  "metadata": {
+    "extraction_date": "2026-02-16",
+    "schema_version": "1.0.0",
+    "source_type": "architecture_doc",
+    "processor": "Claude Code (Chief Engineering Agent)",
+    "confidence_score": 0.94
+  },
+  "source_document": {
+    "title": "Executive Command Center — Dashboard Composition",
+    "path": "docs/architecture-pages/04-executive-dashboard.html",
+    "version": "v1.1",
+    "date": "2026-02-05",
+    "classification": "confidential"
+  },
+  "extracted_entities": {
+    "systems": [
+      { "name": "Power BI", "status": "configuring", "platform": "Microsoft", "function": "Primary dashboard surface" },
+      { "name": "Microsoft Teams", "status": "configuring", "platform": "Microsoft", "function": "Embedded dashboard tab" },
+      { "name": "SharePoint", "status": "live", "platform": "Microsoft", "function": "Dashboard widget page" }
+    ],
+    "agents": [],
+    "people": [],
+    "brands": [],
+    "data_flows": []
+  },
+  "context_blocks": [
+    {
+      "domain": "operations",
+      "category": "dashboard_composition",
+      "content": "Executive Command Center consists of a KPI Ribbon (Total AUM, Active Deals, Pipeline Value, Investor Count, Revenue MTD) plus 8 dashboard cards: Deal Pipeline (Wix CMS → Power BI), Investor Activity (NDAs + Activity Log), Financial Performance (Business Central), CRM & Sales (Dynamics 365), Project & Asset Management (Wix CMS + Planner), Marketing & Content (Wix Analytics + CRM), Document Intelligence (SharePoint + Activity Log), AI Operations Monitor (All Agent Platforms).",
+      "actionable": true,
+      "dependencies": ["Power BI", "Wix CMS", "Business Central", "Dynamics 365", "SharePoint"],
+      "status": "planned"
+    },
+    {
+      "domain": "operations",
+      "category": "dashboard_surfaces",
+      "content": "Three surface options: Power BI Service (primary, full interactive with drill-down), Microsoft Teams Tab (embedded for meetings and standup), SharePoint Page (widget for document-centric workflows).",
+      "actionable": true,
+      "dependencies": ["Power BI", "Teams", "SharePoint"],
+      "status": "planned"
+    },
+    {
+      "domain": "operations",
+      "category": "kpi_definitions",
+      "content": "Deal Pipeline KPIs: funnel by status stage, asset class distribution, weighted average cap rate, geographic heat map, days-in-stage tracking. Investor KPIs: NDA submissions by deal, investor type segmentation, access grant conversion rate, document engagement, return visitor analysis. Financial KPIs: capital commitments, fee schedule/earned revenue, portfolio IRR, cash flow/distributions, budget vs actual variance. AI Ops KPIs: agent utilization rates, workflow completion, error/retry tracking, API call volumes/latency, cost per operation.",
+      "actionable": false,
+      "dependencies": [],
+      "status": "planned"
+    }
+  ],
+  "decisions": [
+    {
+      "decision": "Power BI designated as primary dashboard surface with Teams and SharePoint as secondary surfaces",
+      "rationale": "Power BI provides full interactive drill-down capability; Teams and SharePoint provide contextual access",
+      "impact": "All reporting consolidates through Power BI; team members access via their preferred surface",
+      "date": "2026-02-05"
+    },
+    {
+      "decision": "Single-pane-of-glass design with 8 dashboard cards + KPI ribbon",
+      "rationale": "Unified view prevents context switching; all verticals report into one view",
+      "impact": "Executive decision-making supported by real-time cross-vertical data",
+      "date": "2026-02-05"
+    }
+  ],
+  "action_items": [
+    { "action": "Design Power BI data model connecting all source systems", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Phase 2", "status": "pending" },
+    { "action": "Build Deal Pipeline dashboard card", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Phase 3", "status": "pending" },
+    { "action": "Build Investor Activity dashboard card", "owner": "Chief Engineering Agent", "priority": "high", "deadline": "Phase 3", "status": "pending" },
+    { "action": "Build Financial Performance dashboard card", "owner": "Chief Engineering Agent", "priority": "medium", "deadline": "Phase 3", "status": "pending" },
+    { "action": "Build AI Operations Monitor card", "owner": "Chief Engineering Agent", "priority": "medium", "deadline": "Phase 3", "status": "pending" },
+    { "action": "Embed Power BI dashboard in Teams and SharePoint", "owner": "Chief Engineering Agent", "priority": "medium", "deadline": "Phase 3-4", "status": "pending" }
+  ]
+}
