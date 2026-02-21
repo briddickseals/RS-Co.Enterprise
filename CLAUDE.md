@@ -87,6 +87,53 @@ git commit -m "session-log: {YYYY-MM-DD HH:mm} {environment} — {brief summary}
 git push -u origin {current-branch}
 ```
 
+## STANDING DIRECTIVES — ALWAYS Execute
+
+### 1. Teams Operations Channel — Mandatory Post
+
+**ALWAYS** send session logs and significant work summaries to the **Operations Channel** in Microsoft Teams. This is non-negotiable and applies to every session, every environment.
+
+**When to post:**
+- At the end of every session (alongside writing the session log file)
+- When any significant milestone, decision, or deliverable is completed
+- When any external integration action is taken (Wix, Azure, SharePoint, etc.)
+
+**What to post:**
+- The full session log content (same content written to `docs/session-logs/`)
+- Use formatted markdown for readability in Teams
+- Tag it with the environment and branch for traceability
+
+**How to post (by environment):**
+- **VS Code (with Teams MCP):** Use the Microsoft Teams MCP server to post directly to the Operations Channel
+- **Web / CLI (no MCP):** Generate the Teams message content and instruct the user to post it, OR queue it in `docs/session-logs/PENDING-TEAMS-POST.md` for the next MCP-enabled session to send
+
+**Format for Teams post:**
+```
+📋 Session Log — {YYYY-MM-DD HH:mm} — {environment}
+🔀 Branch: {branch}
+
+✅ Work Completed:
+{bulleted list}
+
+🔧 External Actions:
+{bulleted list of Teams/Wix/Azure/SharePoint actions}
+
+📁 Files Modified:
+{bulleted list}
+
+⏭️ Next Steps:
+{bulleted list}
+
+📌 Key Decisions:
+{bulleted list}
+```
+
+### 2. Record Keeping
+
+All session logs serve as the permanent operational record. Nothing gets lost between sessions. The Operations Channel in Teams is the team-visible mirror of `docs/session-logs/`.
+
+---
+
 ## Repo Structure Reference
 
 ```
